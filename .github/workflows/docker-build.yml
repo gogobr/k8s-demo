@@ -36,3 +36,19 @@ jobs:
           tags: |
             your-docker-id/stock-service:latest
             your-docker-id/stock-service:${{ github.sha }}
+
+      - name: Update Helm Values
+        run: |
+          # 安装 yq (Yaml 处理工具)
+          wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
+        
+          # 修改 values.yaml 里的 image.repository 和 tag
+          # 假设你的 values.yaml 结构是 image: { repository: ..., tag: ... }
+          yq -i '.image.tag = "${{ github.sha }}"' k8s/my-chart/values.yaml
+        
+          # 提交回 Git
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add k8s/my-chart/values.yaml
+          git commit -m "Update image tag to ${{ github.sha }}"
+          git push
