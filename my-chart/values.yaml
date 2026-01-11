@@ -1,0 +1,12 @@
+replicaCount: 1
+
+image:
+  repository: k8s-demo
+  tag: v6
+  pullPolicy: IfNotPresent
+
+appConfig:
+  greeting: "Hello from Helm Values!"
+
+service:
+  type: LoadBalancer

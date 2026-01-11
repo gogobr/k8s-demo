@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  # 动态名字：my-demo-app-monitor, k8s-demo-backend-monitor
+  name: {{ .Release.Name }}-monitor
+  namespace: monitoring
+  labels:
+    release: monitor
+    app: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      # 动态抓取：只抓取对应 Release 的 Service
+      app: {{ .Release.Name }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s
