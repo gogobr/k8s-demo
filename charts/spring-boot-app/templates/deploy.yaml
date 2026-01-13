@@ -63,7 +63,7 @@ spec:
                   name: mysql-secret
                   key: password
             - name: DB_URL
-              value: "jdbc:mysql://{{ .Values.mysql.host | default "mycluster" }}:{{ .Values.mysql.port | default 6446 }}/k8s_demo_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+              value: "jdbc:mysql://{{ .Values.mysql.host | default 'mycluster' }}:{{ .Values.mysql.port | default 6446 }}/k8s_demo_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
 ---
 apiVersion: v1
 kind: Service
