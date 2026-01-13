@@ -120,11 +120,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <modules>
-        <module>apps/backend</module>
-        <module>apps/frontend</module>
-    </modules>
-
     <build>
         <plugins>
             <plugin>

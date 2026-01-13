@@ -7,7 +7,7 @@ spring:
   # [新增] Redis 配置
   data:
     redis:
-      host: ${REDIS_HOST:redis-0.redis} # 支持环境变量覆盖，默认用 K8s DNS
+      host: ${REDIS_HOST:redis-0.redis.middleware.svc.cluster.local} # 支持环境变量覆盖，默认用 K8s DNS
       port: 6379
       password: ${REDIS_PASSWORD:root123456}
       database: 0
