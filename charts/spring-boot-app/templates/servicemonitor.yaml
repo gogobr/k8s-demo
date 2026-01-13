@@ -1,21 +1,19 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  # 动态名字：my-demo-app-monitor, k8s-demo-backend-monitor
   name: {{ .Release.Name }}-monitor
-  namespace: monitoring
+  namespace: monitoring   # 建议放在监控命名空间
   labels:
-    release: monitor
+    release: monitor      # 👈 必须加！这是 Prometheus Operator 的默认选择器
     app: {{ .Release.Name }}
 spec:
   selector:
     matchLabels:
-      # 动态抓取：只抓取对应 Release 的 Service
-      app: {{ .Release.Name }}
+      app: {{ .Release.Name }}  # 👈 必须和 Service 的 label 一致
   namespaceSelector:
     matchNames:
-      - {{ .Release.Namespace }}
+      - {{ .Release.Namespace }}           # 👈 你的应用在 default 命名空间
   endpoints:
-    - port: http
+    - port: http          # 👈 对应 Service 里的 name: http
       path: /actuator/prometheus
       interval: 15s
