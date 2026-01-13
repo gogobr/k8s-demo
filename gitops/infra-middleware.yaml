@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infrastructure-base
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gogobr/k8s-demo.git
+    targetRevision: main
+    path: infrastructure  # 指向基础组件目录
+    directory:
+      recurse: true       # 【关键】递归部署该目录下所有子目录(mysql, redis...)
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: middleware # 【关键】部署到中间件专用命名空间
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true # 自动创建 middleware 命名空间

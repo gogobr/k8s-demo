@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: k8s-demo # 对应 Nacos 里的 Data ID 前缀
+  cloud:
+    nacos:
+      config:
+        # Nacos 在 K8s 里的 DNS 地址
+        server-addr: nacos.middleware.svc.cluster.local:8848
+        file-extension: yaml
+        # 认证信息
+#        username: nacos
+#        password: nacos
