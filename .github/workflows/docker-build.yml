@@ -6,6 +6,8 @@ on:
     paths:
       - 'apps/frontend/**' # 只有前端代码变动时才触发
       - '.github/workflows/deploy-frontend.yml'
+    # 【新增】添加这一行，开启手动触发按钮
+  workflow_dispatch:
 
 # 赋予 CI 脚本修改仓库代码的权限
 permissions:
