@@ -1,0 +1,26 @@
+# 1. 定义一个集群角色，允许查看 Namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mysql-sidecar-namespace-viewer
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+
+---
+# 2. 将上面的角色绑定给 middleware 命名空间下的 sidecar 账号
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: mysql-sidecar-namespace-viewer-binding
+subjects:
+  - kind: ServiceAccount
+    # 必须和报错日志里的名字一模一样
+    name: mycluster-sidecar-sa
+    # 【关键】这里必须是你现在使用的命名空间
+    namespace: middleware
+roleRef:
+  kind: ClusterRole
+  name: mysql-sidecar-namespace-viewer
+  apiGroup: rbac.authorization.k8s.io
