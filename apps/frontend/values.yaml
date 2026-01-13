@@ -1,12 +1,10 @@
 # 这里的配置会覆盖 Chart 里的默认值
 image:
   repository: mengxu46/mengxu/stock-service
-  tag: "latest"
-
+  tag: "0128db9ec4511f7507ea57c3db11c50c8d897752"
 # 【关键】注入基础设施的坐标 (指向 middleware 命名空间)
 mysql:
   host: "mycluster.middleware.svc.cluster.local"
   port: 6446
-
 env:
   springAppName: "stock-service"
