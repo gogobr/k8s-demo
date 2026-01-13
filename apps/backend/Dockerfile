@@ -1,4 +1,4 @@
-FROM localhost/base-java:21
+FROM eclipse-temurin:21-jdk-alpine
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8

@@ -47,8 +47,8 @@ jobs:
           file: ./apps/frontend/Dockerfile
           push: true
           tags: |
-            your-docker-id/stock-service:latest
-            your-docker-id/stock-service:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/stock-service:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/stock-service:latest
 
       - name: Update Helm Values
         run: |
