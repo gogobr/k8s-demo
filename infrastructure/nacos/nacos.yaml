@@ -48,7 +48,7 @@ spec:
             - name: SPRING_DATASOURCE_PLATFORM
               value: "mysql"
             - name: MYSQL_SERVICE_HOST
-              value: "mycluster.default.svc.cluster.local"
+              value: "mycluster.middleware.svc.cluster.local"
             - name: MYSQL_SERVICE_PORT
               value: "6446" # 注意：使用 Router 的读写端口
             - name: MYSQL_SERVICE_DB_NAME
