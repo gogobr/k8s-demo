@@ -52,16 +52,31 @@ jobs:
 
       - name: Update Helm Values
         run: |
-          # 安装 yq (Yaml 处理工具)
-          wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
-        
-          # 修改 values.yaml 里的 image.repository 和 tag
-          # 假设你的 values.yaml 结构是 image: { repository: ..., tag: ... }
-          yq -i '.image.tag = "${{ github.sha }}"' k8s/my-chart/values.yaml
-        
-          # 提交回 Git
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          git add k8s/my-chart/values.yaml
-          git commit -m "Update image tag to ${{ github.sha }}"
-          git push
+          # 【修复 1】安装 yq 需要 sudo 权限
+          sudo wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+          
+          # 设定新的 Tag
+          NEW_TAG=${{ github.sha }}
+          
+          # 【修复 2】路径必须指向 apps/frontend/values.yaml
+          # 请确保你的 apps/frontend 目录下确实有 values.yaml 这个文件
+          TARGET_FILE="apps/frontend/values.yaml"
+          
+          echo "Updating $TARGET_FILE with tag $NEW_TAG..."
+          
+          # 修改文件
+          yq -i ".image.tag = \"$NEW_TAG\"" $TARGET_FILE
+          
+          # 配置 Git 并提交
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # 只有文件发生变化时才提交
+          if [ -n "$(git status --porcelain)" ]; then
+            git add $TARGET_FILE
+            git commit -m "chore(ci): update frontend image tag to $NEW_TAG"
+            git push
+          else
+            echo "No changes to commit"
+          fi
