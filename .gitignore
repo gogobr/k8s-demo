@@ -1,0 +1,9 @@
+.idea/
+.xcodemap/
+**/*.iml
+**/target
+logs
+*.log
+consumer-store-goods/target
+*.zip
+temp_*
