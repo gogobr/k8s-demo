@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: observability-ingress
+  namespace: monitoring
+  annotations:
+    # 告诉 K8s 这个规则归 nginx 管
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    # 规则 1: Grafana
+    - host: grafana.k8s.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: observability-grafana # Service 名字
+                port:
+                  number: 80 # Service 端口 (注意不是 30300，是 ClusterIP 端口)
+
+    # 规则 2: Jaeger
+    - host: jaeger.k8s.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: observability-jaeger-query
+                port:
+                  number: 16686
