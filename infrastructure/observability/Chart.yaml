@@ -1,0 +1,21 @@
+apiVersion: v2
+name: observability-stack
+description: A wrapper chart for monitoring and tracing
+type: application
+version: 1.0.0
+
+dependencies:
+  # 1. 监控全家桶 (Prometheus + Grafana)
+  - name: kube-prometheus-stack
+    version: 61.3.0  # 建议固定一个版本，不要写 latest
+    repository: https://prometheus-community.github.io/helm-charts
+
+  # 2. 链路追踪 (Jaeger) - 如果你想用更现代的 Grafana Tempo 也可以换
+  - name: jaeger
+    version: 0.71.1
+    repository: https://jaegertracing.github.io/helm-charts
+
+  # 3. 日志全家桶 (Loki + Promtail)
+  - name: loki-stack
+    version: 2.10.2 # 建议固定版本
+    repository: https://grafana.github.io/helm-charts
