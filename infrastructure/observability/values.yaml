@@ -9,7 +9,7 @@ kube-prometheus-stack:
       nodePort: 30300
     persistence:
       enabled: true
-      size: 10Gi
+      size: 10Gi 
       storageClassName: local-path # 你的 StorageClass
 
     # 自动添加 Loki 为数据源
