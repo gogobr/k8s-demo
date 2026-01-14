@@ -8,8 +8,7 @@ spec:
   selector:
     # 假设你的 Redis Pod 标签是 app=redis-cluster 或类似
     # 请先用 kubectl get pod redis-0 --show-labels 确认一下标签！
-    app.kubernetes.io/name: redis
-    app.kubernetes.io/instance: redis
+    app: redis
   ports:
     - name: redis
       port: 6379
