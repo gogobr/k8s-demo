@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: stock-frontend
+  name: stock-backend
   namespace: argocd
 spec:
   project: default
