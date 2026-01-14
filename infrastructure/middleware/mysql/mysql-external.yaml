@@ -9,7 +9,7 @@ spec:
     # 这里要和 Operator 生成的 Pod 标签一致
     app.kubernetes.io/name: innodbcluster
     cluster: mycluster
-    component: router # 连 Router (读写分离入口)，不要直连 Pod
+    tier: mysql
   ports:
     - name: mysql
       port: 3306 # 暴露出的端口
