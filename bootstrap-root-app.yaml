@@ -1,20 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-app # 总管的名字
+  name: root-app   # 总管的名字
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/argoproj/argo-cd.git
+    repoURL: https://github.com/gogobr/k8s-demo.git
     targetRevision: main
     path: gitops  # 【核心】总管去读 gitops 目录
     directory:
-      recurse: true
+      recurse: true # 读里面的所有 yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd # 应用定义必须部署在 argocd 命名空间
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,72 @@
+# -------------------------------------
+# kube-prometheus-stack 的配置覆盖
+# -------------------------------------
+kube-prometheus-stack:
+  grafana:
+    adminPassword: "admin" # 生产环境建议用 Secret 管理，这里演示用
+    service:
+      type: NodePort # 或者 LoadBalancer
+      nodePort: 30300
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClassName: local-path # 你的 StorageClass
+
+    # 自动添加 Loki 为数据源
+    additionalDataSources:
+      - name: Loki
+        type: loki
+        url: http://observability-loki:3100/ # 注意：这是 K8s 内部 DNS，格式是 <release-name>-loki
+        access: proxy
+        isDefault: false
+
+  prometheus:
+    prometheusSpec:
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: local-path
+            accessModes: [ "ReadWriteOnce" ]
+            resources:
+              requests:
+                storage: 20Gi
+      # 【重要】让 Prometheus 能够抓取我们在 middleware 里的 ServiceMonitor
+      serviceMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: { }
+      serviceMonitorNamespaceSelector: { }
+
+# -------------------------------------
+# Jaeger 的配置覆盖
+# -------------------------------------
+jaeger:
+  provisionDataStore:
+    cassandra: false
+    elasticsearch: false
+    kafka: false
+  allInOne:
+    enabled: true # 开发/测试环境用 AllInOne 内存版，生产环境需接 ES
+    service:
+      type: NodePort
+
+
+# -------------------------------------
+# loki-stack 配置 (日志存储 + 采集)
+# -------------------------------------
+loki-stack:
+  loki:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClassName: local-path # 你的 StorageClass
+      # 如果遇到权限问题 (Loki 经常有 fsGroup 问题)，可能需要加 securityContext
+      # securityContext:
+      #   fsGroup: 10001
+
+  promtail:
+    enabled: true
+    # Promtail 默认配置通常足够，它会自动抓取所有 Pod 的 stdout/stderr
+    config:
+      snippets:
+        pipelineStages:
+          - docker: { } # 解析 docker 格式日志
