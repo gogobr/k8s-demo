@@ -18,7 +18,7 @@ kube-prometheus-stack:
         type: loki
         url: http://observability-loki:3100/ # 注意：这是 K8s 内部 DNS，格式是 <release-name>-loki
         access: proxy
-        isDefault: false
+        isDefault: false # <--- 必须是 false！因为 Prometheus 已经是 true 了
 
   prometheus:
     prometheusSpec:
@@ -39,14 +39,27 @@ kube-prometheus-stack:
 # Jaeger 的配置覆盖
 # -------------------------------------
 jaeger:
+  # 明确告诉它不要用 Cassandra
   provisionDataStore:
     cassandra: false
     elasticsearch: false
-    kafka: false
+  # 强制使用内存存储
+  storage:
+    type: memory
+
   allInOne:
     enabled: true # 开发/测试环境用 AllInOne 内存版，生产环境需接 ES
     service:
       type: NodePort
+
+  # 关掉那些默认连 Cassandra 的独立组件
+  # 如果开了 allInOne，这三个通常应该关掉，否则它们会一直报错重启
+  agent:
+    enabled: false
+  collector:
+    enabled: false
+  query:
+    enabled: false
 
 
 # -------------------------------------
