@@ -7,6 +7,5 @@ image:
 mysql:
   host: "mycluster.middleware.svc.cluster.local"
   port: 6446
-
 env:
   springAppName: "stock-service"
