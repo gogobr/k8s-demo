@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: middleware-ingress
+  namespace: middleware
+  annotations:
+    # 告诉 K8s 这个规则归 nginx 管
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: nacos.k8s.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nacos
+                port:
+                  number: 8848

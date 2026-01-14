@@ -64,25 +64,3 @@ spec:
               name: server
             - containerPort: 9848
               name: client-rpc
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: nacos-ingress
-  namespace: middleware
-#  annotations:
-#    kubernetes.io/ingress.class: "nginx"
-spec:
-  ingressClassName: nginx
-  rules:
-    - host: nacos.local
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: nacos
-                port:
-                  number: 8848
