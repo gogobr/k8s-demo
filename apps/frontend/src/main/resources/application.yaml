@@ -25,14 +25,14 @@ spring:
 
     # 1. 主库配置 (写操作 -> mysql-0)
     master:
-      jdbc-url: jdbc:mysql://mycluster.default.svc.cluster.local:6446/k8s_demo_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      jdbc-url: jdbc:mysql://mycluster.middleware.svc.cluster.local:6446/k8s_demo_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       username: ${DB_USERNAME:root}
       password: ${DB_PASSWORD:root123456}
       driver-class-name: com.mysql.cj.jdbc.Driver
 
     # 2. 从库配置 (读操作 -> mysql-1)
     slave:
-      jdbc-url: jdbc:mysql://mycluster.default.svc.cluster.local:6447/k8s_demo_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      jdbc-url: jdbc:mysql://mycluster.middleware.svc.cluster.local:6447/k8s_demo_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       username: ${DB_USERNAME:root}
       password: ${DB_PASSWORD:root123456}
       driver-class-name: com.mysql.cj.jdbc.Driver
