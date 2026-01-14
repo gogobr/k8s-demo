@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mycluster-external # 名字不能和原来的冲突
+  namespace: middleware
+spec:
+  type: LoadBalancer # 【关键】获取外部 IP
+  selector:
+    # 这里要和 Operator 生成的 Pod 标签一致
+    app.kubernetes.io/name: innodbcluster
+    cluster: mycluster
+    component: router # 连 Router (读写分离入口)，不要直连 Pod
+  ports:
+    - name: mysql
+      port: 3306 # 暴露出的端口
+      targetPort: 6446 # MySQL Router 的读写端口通常是 6446
