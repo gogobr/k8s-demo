@@ -7,8 +7,8 @@ spec:
   type: LoadBalancer # 【关键】获取外部 IP
   selector:
     # 这里要和 Operator 生成的 Pod 标签一致
-    app.kubernetes.io/name: innodbcluster
-    cluster: mycluster
+    mysql.oracle.com/cluster: mycluster
+    component: mysqlrouter
     tier: mysql
   ports:
     - name: mysql
