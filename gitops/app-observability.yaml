@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gogobr/k8s-demo.git
+    targetRevision: main
+    path: infrastructure/observability # 指向刚才创建的 Wrapper Chart
+
+    # 【关键】告诉 Argo CD 这是一个 Helm 项目
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring # 建议单独放在 monitoring 命名空间
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # 【非常重要】Prometheus CRD 太大了，必须开启 ServerSideApply
+      - ServerSideApply=true
