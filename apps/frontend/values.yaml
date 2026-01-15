@@ -7,6 +7,7 @@ mysql:
   host: "mycluster.middleware.svc.cluster.local"
   port: 6446
 env:
+  - springAppName: "k8s-frontend"
   # 1. 告诉 Agent 服务名叫什么 (Jaeger 里显示的名字)
   - name: OTEL_SERVICE_NAME
     value: "k8s-frontend"
@@ -19,6 +20,9 @@ env:
   # 默认为了安全是不显示 SQL 参数的，开发环境可以设为 false 以便调试
   - name: OTEL_INSTRUMENTATION_JDBC_DATASOURCE_ENABLED
     value: "true"
-    springAppName: "k8s-frontend"
+
+
+
+
 service:
   type: NodePort

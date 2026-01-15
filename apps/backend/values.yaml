@@ -7,6 +7,7 @@ mysql:
   host: "mycluster.middleware.svc.cluster.local"
   port: 6446
 env:
+  - springAppName: "k8s-backend"
   # 1. 告诉 Agent 服务名叫什么 (Jaeger 里显示的名字)
   - name: OTEL_SERVICE_NAME
     value: "k8s-backend"
@@ -19,7 +20,7 @@ env:
   - name: OTEL_INSTRUMENTATION_JDBC_DATASOURCE_ENABLED
     value: "true"
 
-    springAppName: "k8s-backend"
+
 
 service:
   type: NodePort
