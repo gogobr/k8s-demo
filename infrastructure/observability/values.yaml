@@ -78,10 +78,10 @@ loki-stack:
 
   promtail:
     enabled: true
-    # Promtail 默认配置通常足够，它会自动抓取所有 Pod 的 stdout/stderr
-    clients:
-      - url: http://observability-loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
     config:
+      # Promtail 默认配置通常足够，它会自动抓取所有 Pod 的 stdout/stderr
+      clients:
+        - url: http://observability-loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
       snippets:
         pipelineStages:
           - docker: { } # 解析 docker 格式日志
