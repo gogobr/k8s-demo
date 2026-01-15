@@ -15,7 +15,8 @@ spec:
       initContainers:
         - name: wait-for-mysql
           image: busybox:1.28
-          command: ['sh', '-c', "until nc -z -v -w 2 {{ .Values.mysql.host | default 'mycluster' }} {{ .Values.mysql.port | default 6446 }}; do echo waiting for mysql; sleep 2; done"]
+          # 🔥【修复】外层用单引号，内层用双引号，避免解析冲突
+          command: ['sh', '-c', 'until nc -z -v -w 2 {{ .Values.mysql.host | default "mycluster.middleware" }} {{ .Values.mysql.port | default 6446 }}; do echo waiting for mysql; sleep 2; done']
       containers:
         - name: k8s-demo
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -58,12 +59,13 @@ spec:
               value: "root"
 
             - name: DB_PASSWORD
-              valueFrom: # <--- 从 Secret 读取密码
+              valueFrom:
                 secretKeyRef:
                   name: mysql-secret
                   key: password
             - name: DB_URL
-              value: "jdbc:mysql://{{ .Values.mysql.host | default 'mycluster' }}:{{ .Values.mysql.port | default 6446 }}/k8s_demo_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+              # 🔥【建议】这里也统一用双引号，更符合 Go Template 习惯，且要加上 .middleware 后缀确保跨命名空间能通
+              value: "jdbc:mysql://{{ .Values.mysql.host | default "mycluster.middleware" }}:{{ .Values.mysql.port | default 6446 }}/k8s_demo_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
 ---
 apiVersion: v1
 kind: Service
