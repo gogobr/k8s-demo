@@ -1,10 +1,14 @@
 # 这里的配置会覆盖 Chart 里的默认值
 image:
-  repository: mengxu46/mengxu
-  tag: "87e47b178284a991507d5e880b519b7b5a87d9ab"
+  repository: mengxu46/k8s-backend
+  tag: "latest"
+
 # 【关键】注入基础设施的坐标 (指向 middleware 命名空间)
 mysql:
   host: "mycluster.middleware.svc.cluster.local"
   port: 6446
 env:
   springAppName: "k8s-backend"
+
+service:
+  type: NodePort
