@@ -43,8 +43,8 @@ jobs:
           file: ./apps/backend/Dockerfile # <--- Dockerfile 路径
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/stock-backend:${{ github.sha }} # <--- 镜像名改成 backend
-            ${{ secrets.DOCKER_USERNAME }}/stock-backend:latest
+            ${{ secrets.DOCKER_USERNAME }}/k8s-backend:${{ github.sha }} # <--- 镜像名改成 backend
+            ${{ secrets.DOCKER_USERNAME }}/k8s-backend:latest
 
       - name: Update Helm Values
         run: |
