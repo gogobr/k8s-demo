@@ -67,6 +67,8 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             git add $TARGET_FILE
             git commit -m "chore(ci): update backend image tag to $NEW_TAG [skip ci]"
+          
+            git pull --rebase origin main
             git push
           else
             echo "No changes to commit"
