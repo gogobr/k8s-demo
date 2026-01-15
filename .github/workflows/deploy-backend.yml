@@ -43,7 +43,7 @@ jobs:
           file: ./apps/backend/Dockerfile # <--- Dockerfile 路径
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/k8s-backend:${{ github.sha }} # <--- 镜像名改成 backend
+            ${{ secrets.DOCKER_USERNAME }}/k8s-backend:${{ github.sha }} 
             ${{ secrets.DOCKER_USERNAME }}/k8s-backend:latest
 
       - name: Update Helm Values
@@ -54,7 +54,7 @@ jobs:
           NEW_TAG=${{ github.sha }}
           
           # 5. 修改目标 Values 文件路径
-          TARGET_FILE="apps/backend/values.yaml" # <--- 指向后端的 values.yaml
+          TARGET_FILE="apps/backend/values.yaml" 
           
           echo "Updating $TARGET_FILE with tag $NEW_TAG..."
           
