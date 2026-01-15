@@ -9,7 +9,7 @@ kube-prometheus-stack:
       nodePort: 30300
     persistence:
       enabled: true
-      size: 10Gi 
+      size: 10Gi
       storageClassName: local-path # 你的 StorageClass
 
     # 自动添加 Loki 为数据源
@@ -79,6 +79,8 @@ loki-stack:
   promtail:
     enabled: true
     # Promtail 默认配置通常足够，它会自动抓取所有 Pod 的 stdout/stderr
+    clients:
+      - url: http://observability-loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
     config:
       snippets:
         pipelineStages:
