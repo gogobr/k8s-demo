@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: stock-frontend
+  name: k8s-frontend
   namespace: argocd
 spec:
   project: default
