@@ -12,15 +12,14 @@ env:
   otelServiceName: "k8s-frontend"
 service:
   type: NodePort
+
 ingress:
   enabled: true
-  className: "nginx" # 必须是 nginx，对应你的 controller
+  className: "nginx" # 【关键】必须指定这个，否则 K8s 不知道谁来管它
   annotations:
-    # 限制上传大小，防止大请求把网关撑爆
-    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false" # 本地没 HTTPS，强制关掉跳转
   hosts:
-    - host: frontend.local
+    - host: frontend.local # 【关键】请统一用这个名字，别混用 frontend.local
       paths:
         - path: /
           pathType: Prefix
-  tls: [] # 暂时不开 HTTPS
