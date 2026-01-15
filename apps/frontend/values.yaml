@@ -13,3 +13,16 @@ env:
 
 service:
   type: NodePort
+
+ingress:
+  enabled: true
+  className: "nginx" # 必须是 nginx，对应你的 controller
+  annotations:
+    # 限制上传大小，防止大请求把网关撑爆
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  hosts:
+    - host: frontend.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: [] # 暂时不开 HTTPS
