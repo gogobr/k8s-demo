@@ -1,7 +1,7 @@
 # 这里的配置会覆盖 Chart 里的默认值
 image:
   repository: mengxu46/k8s-frontend
-  tag: "9468824220ce970df743242e51481c26616fe4df"
+  tag: "88ab2932fd5f158e1834319089220c8b1f44dcc7"
 # 【关键】注入基础设施的坐标 (指向 middleware 命名空间)
 mysql:
   host: "mycluster.middleware.svc.cluster.local"
@@ -12,7 +12,6 @@ env:
   otelServiceName: "k8s-frontend"
 service:
   type: NodePort
-
 ingress:
   enabled: true
   className: "nginx" # 【关键】必须指定这个，否则 K8s 不知道谁来管它
