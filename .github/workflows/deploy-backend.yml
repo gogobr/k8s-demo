@@ -1,0 +1,84 @@
+name: Deploy Backend Service
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'apps/backend/**' # 只有前端代码变动时才触发
+      - '.github/workflows/deploy-backend.yml'
+    # 【新增】添加这一行，开启手动触发按钮
+  workflow_dispatch:
+
+# 赋予 CI 脚本修改仓库代码的权限
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 拉取代码
+      - uses: actions/checkout@v3
+
+      # 2. 设置 JDK 环境
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      # 3. Maven 编译打包 (只构建前端模块)
+      - name: Build with Maven
+        run: mvn clean package -pl apps/backend -am -DskipTests
+
+      # 4. 登录 Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 5. 构建并推送 Docker 镜像
+      # Tag 使用 github.sha (Commit Hash) 的前7位，作为唯一版本号
+      - name: Build and Push Docker Image
+        id: docker_build
+        uses: docker/build-push-action@v4
+        with:
+          context: ./apps/backend
+          file: ./apps/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/k8s-backend:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/k8s-backend:latest
+
+      - name: Update Helm Values
+        run: |
+          # 【修复 1】安装 yq 需要 sudo 权限
+          sudo wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+          
+          # 设定新的 Tag
+          NEW_TAG=${{ github.sha }}
+          
+          # 【修复 2】路径必须指向 apps/backend/values.yaml
+          # 请确保你的 apps/backend 目录下确实有 values.yaml 这个文件！
+          TARGET_FILE="apps/backend/values.yaml"
+          
+          echo "Updating $TARGET_FILE with tag $NEW_TAG..."
+          
+          # 修改文件
+          yq -i ".image.tag = \"$NEW_TAG\"" $TARGET_FILE
+          
+          # 配置 Git 并提交
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # 只有文件发生变化时才提交
+          if [ -n "$(git status --porcelain)" ]; then
+            git add $TARGET_FILE
+            git commit -m "chore(ci): update backend image tag to $NEW_TAG [skip ci]"
+            git push
+          else
+            echo "No changes to commit"
+          fi
