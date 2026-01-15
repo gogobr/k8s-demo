@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "spring-boot-app.fullname" . }}
+  name: {{ include "my-chart.fullname" . }}
   labels:
-    {{- include "spring-boot-app.labels" . | nindent 4 }}
+    {{- include "my-chart.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -21,7 +21,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "spring-boot-app.fullname" $ }}
+                name: {{ include "my-chart.fullname" $ }}
                 port:
                   number: {{ $.Values.service.port }}
           {{- end }}
