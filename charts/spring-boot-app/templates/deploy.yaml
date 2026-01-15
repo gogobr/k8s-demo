@@ -80,6 +80,16 @@ spec:
             - name: OTEL_EXPORTER_OTLP_PROTOCOL
               value: "grpc"
 
+              # 🔥【新增】禁用 Metrics 导出 (解决 UNIMPLEMENTED 报错)
+              # 因为 Jaeger 只管链路，不管 JVM 内存/CPU 这些指标
+            - name: OTEL_METRICS_EXPORTER
+              value: "none"
+
+              # (可选) 建议顺手把 Logs 导出也禁用了，因为我们用 Promtail+Loki 采集日志了
+              # 避免 Agent 重复发日志给 Jaeger 浪费带宽
+            - name: OTEL_LOGS_EXPORTER
+              value: "none"
+
             # 5. 数据库连接信息
             - name: DB_URL
               # 🔥【建议】这里也统一用双引号，更符合 Go Template 习惯，且要加上 .middleware 后缀确保跨命名空间能通
