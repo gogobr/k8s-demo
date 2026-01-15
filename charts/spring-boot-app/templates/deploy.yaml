@@ -16,7 +16,7 @@ spec:
         - name: wait-for-mysql
           image: busybox:1.28
           # 🔥【修复】外层用单引号，内层用双引号，避免解析冲突
-          command: ['sh', '-c', 'until nc -z -v -w 2 {{ .Values.mysql.host | default "mycluster.middleware" }} {{ .Values.mysql.port | default 6446 }}; do echo waiting for mysql; sleep 2; done']
+          command: [ 'sh', '-c', 'until nc -z -v -w 2 {{ .Values.mysql.host | default "mycluster.middleware" }} {{ .Values.mysql.port | default 6446 }}; do echo waiting for mysql; sleep 2; done' ]
       containers:
         - name: k8s-demo
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -63,6 +63,20 @@ spec:
                 secretKeyRef:
                   name: mysql-secret
                   key: password
+
+            # 1. Service Name (从 values 读取，或者默认用 Release Name)
+            - name: OTEL_SERVICE_NAME
+              value: {{ .Values.env.otelServiceName | default .Release.Name }}
+
+            # 2. Collector 地址 (这是基础设施，通常是固定的)
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://observability-jaeger-collector.monitoring:4317"
+
+            # 3. 开启 SQL 参数显示
+            - name: OTEL_INSTRUMENTATION_JDBC_DATASOURCE_ENABLED
+              value: "true"
+
+            # 4. 数据库连接信息
             - name: DB_URL
               # 🔥【建议】这里也统一用双引号，更符合 Go Template 习惯，且要加上 .middleware 后缀确保跨命名空间能通
               value: "jdbc:mysql://{{ .Values.mysql.host | default "mycluster.middleware" }}:{{ .Values.mysql.port | default 6446 }}/k8s_demo_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
