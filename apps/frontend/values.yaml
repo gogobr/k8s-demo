@@ -9,3 +9,6 @@ mysql:
   port: 6446
 env:
   springAppName: "k8s-frontend"
+
+service:
+  type: NodePort
