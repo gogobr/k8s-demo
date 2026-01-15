@@ -76,7 +76,11 @@ spec:
             - name: OTEL_INSTRUMENTATION_JDBC_DATASOURCE_ENABLED
               value: "true"
 
-            # 4. 数据库连接信息
+            # 4. 默认使用 grpc
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+
+            # 5. 数据库连接信息
             - name: DB_URL
               # 🔥【建议】这里也统一用双引号，更符合 Go Template 习惯，且要加上 .middleware 后缀确保跨命名空间能通
               value: "jdbc:mysql://{{ .Values.mysql.host | default "mycluster.middleware" }}:{{ .Values.mysql.port | default 6446 }}/k8s_demo_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
