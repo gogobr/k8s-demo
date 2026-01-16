@@ -94,6 +94,11 @@ spec:
             - name: DB_URL
               # 🔥【建议】这里也统一用双引号，更符合 Go Template 习惯，且要加上 .middleware 后缀确保跨命名空间能通
               value: "jdbc:mysql://{{ .Values.mysql.host | default "mycluster.middleware" }}:{{ .Values.mysql.port | default 6446 }}/k8s_demo_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+
+            # 🔥【架构优化】开启 Micrometer 直方图统计，用于计算 P95/P99 延迟
+            # 这会让 Actuator 生成 _bucket 指标
+            - name: MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILES_HISTOGRAM_HTTP_SERVER_REQUESTS
+              value: "true
 ---
 apiVersion: v1
 kind: Service
