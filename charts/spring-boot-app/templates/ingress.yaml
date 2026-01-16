@@ -21,9 +21,11 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ .Release.Name }}
+                # 🔥【关键修改】加上 $ 符号回到根作用域
+                name: {{ $.Release.Name }}
                 port:
-                  number: {{ $.Values.service.port | default 80}}
+                  # 你下一行写对了用了 $, 这一行也要用 $
+                  number: {{ $.Values.service.port | default 80 }}
           {{- end }}
     {{- end }}
 {{- end }}
