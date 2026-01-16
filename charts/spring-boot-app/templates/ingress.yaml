@@ -21,7 +21,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "my-chart.fullname" $ }}
+                name: {{ .Release.Name }}
                 port:
                   number: {{ $.Values.service.port | default 80}}
           {{- end }}
