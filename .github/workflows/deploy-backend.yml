@@ -4,7 +4,9 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'apps/backend/**' # <--- 2. 关键！只有后端目录变动时才触发
+      - 'apps/backend/**'              # 1. 监听后端目录下所有文件
+      - '!apps/backend/values.yaml'    # 2. 排除 values.yaml
+      - '!apps/backend/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
       - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 

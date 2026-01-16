@@ -13,6 +13,7 @@ env:
 service:
   type: ClusterIP
   port: 80 # Service 对外暴露的端口 (通常是 80)
+  targetPort: 8080
 ingress:
   enabled: true
   className: "nginx" # 【关键】必须指定这个，否则 K8s 不知道谁来管它

@@ -5,6 +5,8 @@ on:
     branches: [ "main" ]
     paths:
       - 'apps/frontend/**' # 只有前端代码变动时才触发
+      - '!apps/frontend/values.yaml'    # 2. 排除 values.yaml
+      - '!apps/frontend/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
       - '.github/workflows/deploy-frontend.yml'
     # 【新增】添加这一行，开启手动触发按钮
   workflow_dispatch:
