@@ -96,8 +96,8 @@ spec:
               value: "jdbc:mysql://{{ .Values.mysql.host | default "mycluster.middleware" }}:{{ .Values.mysql.port | default 6446 }}/k8s_demo_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
 
             # 这会让 Actuator 生成 _bucket 指标
-            - name: MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILES_HISTOGRAM_HTTP_SERVER_REQUESTS
-              value: "true"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Dmanagement.metrics.distribution.percentiles-histogram.http.server.requests=true"
 ---
 apiVersion: v1
 kind: Service
