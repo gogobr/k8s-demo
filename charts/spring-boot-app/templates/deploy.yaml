@@ -97,7 +97,7 @@ spec:
 
             # 这会让 Actuator 生成 _bucket 指标
             - name: MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILES_HISTOGRAM_HTTP_SERVER_REQUESTS
-              value: "true
+              value: "true"
 ---
 apiVersion: v1
 kind: Service
