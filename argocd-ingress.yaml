@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+  annotations:
+    # 关键点 1: 告诉 Nginx，后端的 ArgoCD 说的是 HTTPS，不是 HTTP
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    # 关键点 2: 开启 SSL 透传（可选，但在某些 ArgoCD 版本能解决重定向循环）
+    # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    # 关键点 3: 允许较大的包体（防止上传大 Chart 时报错）
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: argocd.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 443
