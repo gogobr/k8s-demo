@@ -10,3 +10,11 @@ appConfig:
 
 service:
   type: LoadBalancer
+
+resources:
+  requests:
+  cpu: "1000m"
+  memory: "1024Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1024Mi"

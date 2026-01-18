@@ -34,3 +34,11 @@ autoscaling:
   targetCPUUtilizationPercentage: 1
   # 如果有 memory 配置，也可以加上，但 CPU 最直观
   # targetMemoryUtilizationPercentage: 80
+
+resources:
+  requests:
+  cpu: "1000m"
+  memory: "1024Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1024Mi"
