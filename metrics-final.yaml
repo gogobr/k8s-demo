@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-server
+  namespace: kube-system
+  labels:
+    k8s-app: metrics-server
+spec:
+  selector:
+    matchLabels:
+      k8s-app: metrics-server
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        k8s-app: metrics-server
+    spec:
+      serviceAccountName: metrics-server
+      priorityClassName: system-cluster-critical
+      containers:
+        - name: metrics-server
+          # 🔥 使用阿里云镜像，解决拉取问题
+          image: registry.aliyuncs.com/google_containers/metrics-server:v0.8.0
+          imagePullPolicy: IfNotPresent
+          args:
+            # 🔥 关键修复：指定证书目录到可写路径 /tmp
+            - --cert-dir=/tmp
+            - --secure-port=4443
+            # 🔥 关键修复：强制使用 InternalIP 连接 Pod，解决 DNS 解析失败
+            - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+            - --kubelet-use-node-status-port
+            - --metric-resolution=15s
+            # 🔥 关键修复：忽略证书验证
+            - --kubelet-insecure-tls
+          ports:
+            - containerPort: 4443
+              name: https
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: https
+              scheme: HTTPS
+            periodSeconds: 10
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: https
+              scheme: HTTPS
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-dir
+      nodeSelector:
+        kubernetes.io/os: linux
+      volumes:
+        - name: tmp-dir
+          emptyDir: {}

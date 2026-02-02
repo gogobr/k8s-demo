@@ -18,7 +18,7 @@ export const options = {
 export default function () {
     // 2. 模拟业务请求
     // 注意：这里用 stock.local，确保你本地 hosts 已配置
-    const res = http.get('http://frontend.local/hello'); // 或者你的业务接口
+    const res = http.get('http://frontend.local/db-test'); // 或者你的业务接口
 
     // 3. 断言检查
     check(res, {

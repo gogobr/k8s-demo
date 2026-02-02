@@ -66,6 +66,12 @@ jaeger:
 # loki-stack 配置 (日志存储 + 采集)
 # -------------------------------------
 loki-stack:
+  grafana:
+    enabled: false
+    sidecar:
+      datasources:
+        enabled: false
+
   loki:
     enabled: true
     persistence:
