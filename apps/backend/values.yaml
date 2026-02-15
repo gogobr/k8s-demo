@@ -21,7 +21,7 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false" # 本地没 HTTPS，强制关掉跳转
   hosts:
-    - host: frontend.local # 【关键】请统一用这个名字，别混用 frontend.local
+    - host: backend.local # 【关键】请统一用这个名字，别混用 frontend.local
       paths:
         - path: /
           pathType: Prefix
