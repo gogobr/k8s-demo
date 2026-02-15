@@ -12,3 +12,17 @@ env:
   otelServiceName: "k8s-backend"
 service:
   type: NodePort
+
+# ... 其他配置 ...
+
+# 【新增】启用并配置 Ingress
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: backend.k8s.local
+      paths:
+        - path: /
+          pathType: Prefix
