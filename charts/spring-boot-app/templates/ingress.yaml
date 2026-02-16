@@ -21,11 +21,11 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                # 🔥【关键修改】加上 $ 符号回到根作用域
-                name: {{ $.Release.Name }}
+                # 🔥【核心修改 1】优先读取 paths 下配置的 serviceName，如果没有，才回退到 Release.Name
+                name: {{ .serviceName | default $.Release.Name }}
                 port:
-                  # 你下一行写对了用了 $, 这一行也要用 $
-                  number: {{ $.Values.service.port | default 80 }}
+                  # 🔥【核心修改 2】优先读取 paths 下配置的 servicePort，如果没有，才回退到全局端口
+                  number: {{ .servicePort | default $.Values.service.port | default 80 }}
           {{- end }}
     {{- end }}
 {{- end }}

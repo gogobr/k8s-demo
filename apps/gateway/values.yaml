@@ -14,16 +14,15 @@ service:
   type: ClusterIP
   port: 80 # Service 对外暴露的端口 (通常是 80)
   targetPort: 8080
+
 ingress:
   enabled: true
-  className: "nginx" # 【关键】必须指定这个，否则 K8s 不知道谁来管它
-  annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false" # 本地没 HTTPS，强制关掉跳转
   hosts:
-    - host: gateway.local # 【关键】请统一用这个名字，别混用 gateway.local
+    - host: api.local # 或者 backend.local
       paths:
         - path: /
           pathType: Prefix
+
 autoscaling:
   enabled: true
   minReplicas: 1
