@@ -3,6 +3,10 @@ image:
   repository: mengxu46/k8s-gateway
   tag: "latest" # CI 会改这个
 
+mysql:
+  host: "mycluster.middleware.svc.cluster.local"
+  port: 6446
+
 # 环境变量 (连接 Nacos)
 env:
   SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR: "nacos.middleware.svc.cluster.local:8848"
