@@ -1,39 +1,36 @@
-# 这里的配置会覆盖 Chart 里的默认值
+# 继承通用模板的所有配置
 image:
   repository: mengxu46/k8s-gateway
-  tag: "b6c0d90b78d07e91369e55a2023f226e73fe322b"
-# 【关键】注入基础设施的坐标 (指向 middleware 命名空间)
-mysql:
-  host: "mycluster.middleware.svc.cluster.local"
-  port: 6446
+  tag: "latest" # CI 会改这个
+
+# 环境变量 (连接 Nacos)
 env:
-  springAppName: "k8s-gateway"
-  # 我们在这里定义 Service Name，方便模板读取
-  otelServiceName: "k8s-gateway"
+  SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR: "nacos.middleware.svc.cluster.local:8848"
+  # WebFlux 应用不需要 context-path，但可能需要配 Netty 相关参数
+  JAVA_OPTS: "-Xms256m -Xmx512m"
+
+# Service 定义
 service:
   type: ClusterIP
-  port: 80 # Service 对外暴露的端口 (通常是 80)
-  targetPort: 8080
+  port: 8080
+
+# Ingress 定义 (网关独享入口)
 ingress:
   enabled: true
+  className: "nginx"
   hosts:
-    - host: api.local # 或者 backend.local
+    - host: backend.local  # 以后后端接口都走这个域名进网关
       paths:
         - path: /
           pathType: Prefix
-autoscaling:
-  enabled: true
-  minReplicas: 1
-  maxReplicas: 10
-  # 关键修改：为了演示效果，我们暂时把 CPU 阈值设为 1%
-  # 只要 K6 一跑，立刻就能触发扩容，不用等 CPU 真的打满
-  targetCPUUtilizationPercentage: 1
-  # 如果有 memory 配置，也可以加上，但 CPU 最直观
-  # targetMemoryUtilizationPercentage: 80
+          serviceName: k8s-gateway # 强制指向网关
+          servicePort: 8080
+
+# 资源限制 (网关是 CPU 密集型，给够 CPU)
 resources:
-  requests:
-  cpu: "1000m"
-  memory: "1024Mi"
   limits:
-    cpu: "1000m"
-    memory: "1024Mi"
+    cpu: 1000m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
