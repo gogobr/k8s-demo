@@ -1,7 +1,7 @@
 # 这里的配置会覆盖 Chart 里的默认值
 image:
   repository: mengxu46/k8s-backend
-  tag: "6359ac4a88653c2c90cd6b9c98212167b13f4c6d"
+  tag: "2c758e5f5684f03f2d63277dd51169b2b653e493"
 # 【关键】注入基础设施的坐标 (指向 middleware 命名空间)
 mysql:
   host: "mycluster.middleware.svc.cluster.local"
@@ -14,7 +14,6 @@ service:
   type: ClusterIP
   port: 80 # Service 对外暴露的端口 (通常是 80)
   targetPort: 8080
-
 ingress:
   enabled: false
   className: "nginx" # 【关键】必须指定这个，否则 K8s 不知道谁来管它
@@ -25,7 +24,6 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-
 autoscaling:
   enabled: true
   minReplicas: 1
@@ -35,7 +33,6 @@ autoscaling:
   targetCPUUtilizationPercentage: 1
   # 如果有 memory 配置，也可以加上，但 CPU 最直观
   # targetMemoryUtilizationPercentage: 80
-
 resources:
   requests:
   cpu: "1000m"
