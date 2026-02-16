@@ -1,31 +1,27 @@
 # 继承通用模板的所有配置
 image:
   repository: mengxu46/k8s-gateway
-  tag: "latest" # CI 会改这个
-
+  tag: "e00d19857a3d1bcfcd3f52172e9f92fec5469625" # CI 会改这个
 # 环境变量 (连接 Nacos)
 env:
   SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR: "nacos.middleware.svc.cluster.local:8848"
   # WebFlux 应用不需要 context-path，但可能需要配 Netty 相关参数
   JAVA_OPTS: "-Xms256m -Xmx512m"
-
 # Service 定义
 service:
   type: ClusterIP
   port: 8080
-
 # Ingress 定义 (网关独享入口)
 ingress:
   enabled: true
   className: "nginx"
   hosts:
-    - host: backend.local  # 以后后端接口都走这个域名进网关
+    - host: backend.local # 以后后端接口都走这个域名进网关
       paths:
         - path: /
           pathType: Prefix
           serviceName: k8s-gateway # 强制指向网关
           servicePort: 8080
-
 # 资源限制 (网关是 CPU 密集型，给够 CPU)
 resources:
   limits:
