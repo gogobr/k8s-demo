@@ -1,7 +1,7 @@
 # 这里的配置会覆盖 Chart 里的默认值
 image:
   repository: mengxu46/k8s-gateway
-  tag: "257d02c1e84e19de3ae7055534ed269a2ba7af31"
+  tag: "6e4a03f219ecebedb4aca3472110bf61b20c7dd5"
 # 【关键】注入基础设施的坐标 (指向 middleware 命名空间)
 mysql:
   host: "mycluster.middleware.svc.cluster.local"
@@ -14,7 +14,6 @@ service:
   type: ClusterIP
   port: 80 # Service 对外暴露的端口 (通常是 80)
   targetPort: 8080
-
 ingress:
   enabled: true
   hosts:
@@ -22,7 +21,6 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-
 autoscaling:
   enabled: true
   minReplicas: 1
