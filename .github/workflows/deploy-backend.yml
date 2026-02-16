@@ -31,6 +31,14 @@ jobs:
         # -pl 指定模块，-am 连带构建依赖
         run: mvn clean package -pl apps/backend -am -DskipTests
 
+      # 🔥【新增步骤 1】设置 QEMU (用于模拟 ARM64 环境)
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+        # 🔥【新增步骤 2】设置 Docker Buildx (支持多架构构建)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -44,6 +52,8 @@ jobs:
           context: ./apps/backend # <--- 上下文改成后端目录
           file: ./apps/backend/Dockerfile # <--- Dockerfile 路径
           push: true
+          # 🔥【新增参数】关键！同时构建 AMD64 和 ARM64 两个版本
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/k8s-backend:${{ github.sha }} 
             ${{ secrets.DOCKER_USERNAME }}/k8s-backend:latest
