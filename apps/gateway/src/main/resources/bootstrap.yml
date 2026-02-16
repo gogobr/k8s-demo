@@ -7,21 +7,22 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: nacos.middleware.svc.cluster.local:8848 # 你的 Nacos 地址
+        # 🔥 修改点：优先读取环境变量 NACOS_SERVER_ADDR，读不到才用后面的默认值
+        server-addr: ${NACOS_SERVER_ADDR:nacos.middleware.svc.cluster.local:8848}
+      config:
+        # 如果你也用 Nacos 做配置中心，这里也要改
+        server-addr: ${NACOS_SERVER_ADDR:nacos.middleware.svc.cluster.local:8848}
+        file-extension: yaml
     gateway:
       discovery:
         locator:
-          enabled: true # 开启从 Nacos 自动发现服务
+          enabled: true
           lower-case-service-id: true
       routes:
         - id: backend-route
-          # lb:// 代表从 Nacos 注册中心找服务
           uri: lb://k8s-backend
           predicates:
-            # 只要访问 /api/** 的请求，都转给 backend
             - Path=/api/**
           filters:
-            # 去掉第一层路径 /api，比如 /api/hello -> /hello
             - StripPrefix=1
-            # 添加一个请求头，证明经过了网关
             - AddRequestHeader=X-Gateway-From, k8s-gateway
