@@ -1,12 +1,27 @@
+server:
+  port: 8080
+
 spring:
   application:
-    name: k8s-demo # 对应 Nacos 里的 Data ID 前缀
+    name: k8s-gateway
   cloud:
     nacos:
-      config:
-        # Nacos 在 K8s 里的 DNS 地址
-        server-addr: nacos.middleware.svc.cluster.local:8848
-        file-extension: yaml
-        # 认证信息
-#        username: nacos
-#        password: nacos
+      discovery:
+        server-addr: nacos.middleware.svc.cluster.local:8848 # 你的 Nacos 地址
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 开启从 Nacos 自动发现服务
+          lower-case-service-id: true
+      routes:
+        - id: backend-route
+          # lb:// 代表从 Nacos 注册中心找服务
+          uri: lb://k8s-backend
+          predicates:
+            # 只要访问 /api/** 的请求，都转给 backend
+            - Path=/api/**
+          filters:
+            # 去掉第一层路径 /api，比如 /api/hello -> /hello
+            - StripPrefix=1
+            # 添加一个请求头，证明经过了网关
+            - AddRequestHeader=X-Gateway-From, k8s-gateway
