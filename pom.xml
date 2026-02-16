@@ -111,6 +111,7 @@
     <modules>
         <module>apps/frontend</module>
         <module>apps/backend</module>
+        <module>apps/gateway</module>
     </modules>
 
 </project>
