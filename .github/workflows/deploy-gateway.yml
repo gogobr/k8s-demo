@@ -51,8 +51,8 @@ jobs:
           file: ./apps/gateway/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/gateway:${{ github.sha }}
-            ${{ secrets.DOCKER_USERNAME }}/gateway:latest
+            ${{ secrets.DOCKER_USERNAME }}/k8s-gateway:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/k8s-gateway:latest
 
       - name: Update Helm Values
         run: |
