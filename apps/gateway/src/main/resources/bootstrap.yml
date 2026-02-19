@@ -1,51 +1,13 @@
 server:
-  port: 8080
+  port: 8080 # 端口通常是不变的，留本地
 
 spring:
   application:
-    name: k8s-gateway
+    name: k8s-gateway # 我是谁：这决定了它去 Nacos 找 k8s-gateway.yaml
   cloud:
     nacos:
       discovery:
-        # 🔥 修改点：优先读取环境变量 NACOS_SERVER_ADDR，读不到才用后面的默认值
         server-addr: ${NACOS_SERVER_ADDR:nacos.middleware.svc.cluster.local:8848}
       config:
-        # 如果你也用 Nacos 做配置中心，这里也要改
         server-addr: ${NACOS_SERVER_ADDR:nacos.middleware.svc.cluster.local:8848}
-        file-extension: yaml
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-      routes:
-        - id: backend-route
-          uri: lb://k8s-backend
-          predicates:
-            - Path=/api/**
-          filters:
-            - StripPrefix=1
-            - AddRequestHeader=X-Gateway-From, k8s-gateway
-            # 🔥🔥🔥【重点】限流过滤器代码在这里 👇
-            - name: RequestRateLimiter
-              args:
-                # 引用刚才写的 Bean (ipKeyResolver)
-                key-resolver: "#{@ipKeyResolver}"
-                # 令牌桶每秒填充速率 (允许的 QPS = 1) -> 每秒只许 1 个请求
-                redis-rate-limiter.replenishRate: 1
-                # 令牌桶容量 (允许的突发流量 = 2) -> 哪怕空闲很久，最多也只能攒 2 个令牌
-                redis-rate-limiter.burstCapacity: 2
-                # 每个请求消耗多少个令牌
-                redis-rate-limiter.requestedTokens: 1
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-  metrics:
-    tags:
-      application: ${spring.application.name}
+        file-extension: yaml # 我要读的配置文件后缀
