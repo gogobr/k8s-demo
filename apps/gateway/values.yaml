@@ -1,7 +1,7 @@
 # 继承通用模板的所有配置
 image:
   repository: mengxu46/k8s-gateway
-  tag: "eac11ec260c2a8e11b562dcd1b17188d99b595a2" # CI 会改这个
+  tag: "26727a1827a39bb6363b97b976beedf9f59d63ae" # CI 会改这个
 mysql:
   host: "mycluster.middleware.svc.cluster.local"
   port: 6446
