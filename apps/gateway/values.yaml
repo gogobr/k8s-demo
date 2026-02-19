@@ -12,8 +12,11 @@ env:
   # WebFlux 应用不需要 context-path，但可能需要配 Netty 相关参数
   JAVA_OPTS: "-Xms256m -Xmx512m"
   # ... 其他变量 ...
-  # 加上这行，让 Gateway 吐出详细日志
+  # ... 其他变量 ...
+  # 🔥 让限流过滤器打印日志
   logging.level.org.springframework.cloud.gateway.filter.ratelimit: DEBUG
+  # 🔥 让 Redis 响应式连接打印日志
+  logging.level.org.springframework.data.redis: DEBUG
 # Service 定义
 service:
   type: ClusterIP
