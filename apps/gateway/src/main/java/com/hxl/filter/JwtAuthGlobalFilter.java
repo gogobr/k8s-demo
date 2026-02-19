@@ -1,9 +1,9 @@
 package com.hxl.filter;
 
+import com.hxl.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -17,16 +17,17 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 @Component
 public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    // 声明配置属性类
+    private final JwtProperties jwtProperties;
 
-    @Value("${jwt.skip-urls}")
-    private List<String> skipUrls;
+    // 推荐使用构造器注入 (Spring 官方推荐做法)
+    public JwtAuthGlobalFilter(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -35,7 +36,7 @@ public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
         String path = request.getURI().getPath();
 
         // 1. 检查是否在免密白名单中 (比如登录接口)
-        if (skipUrls.stream().anyMatch(path::startsWith)) {
+        if (jwtProperties.getSkipUrls().stream().anyMatch(path::startsWith)) {
             return chain.filter(exchange);
         }
 
@@ -51,7 +52,7 @@ public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
         // 3. 校验 Token
 
         try {
-            SecretKey key = Keys.hmacShaKeyFor(secret.getBytes());
+            SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
             Claims claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
