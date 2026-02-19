@@ -26,3 +26,26 @@ spring:
           filters:
             - StripPrefix=1
             - AddRequestHeader=X-Gateway-From, k8s-gateway
+            # 🔥🔥🔥【重点】限流过滤器代码在这里 👇
+            - name: RequestRateLimiter
+              args:
+                # 引用刚才写的 Bean (ipKeyResolver)
+                key-resolver: "#{@ipKeyResolver}"
+                # 令牌桶每秒填充速率 (允许的 QPS = 1) -> 每秒只许 1 个请求
+                redis-rate-limiter.replenishRate: 1
+                # 令牌桶容量 (允许的突发流量 = 2) -> 哪怕空闲很久，最多也只能攒 2 个令牌
+                redis-rate-limiter.burstCapacity: 2
+                # 每个请求消耗多少个令牌
+                redis-rate-limiter.requestedTokens: 1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
