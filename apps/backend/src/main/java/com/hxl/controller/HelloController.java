@@ -1,5 +1,6 @@
 package com.hxl.controller;
 
+import com.hxl.context.UserContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +23,11 @@ public class HelloController {
         // 如果 K8s 没传这个变量，就默认显示 "Hello K8s (Default)"
         String message = System.getenv().getOrDefault("GREETING_MESSAGE", "Hello K8s (Default)");
 
+        // 直接从 ThreadLocal 中获取用户 ID，无需再通过参数传递
+        String userId = UserContextHolder.getUserId();
         try {
-            return new String(message.getBytes(), StandardCharsets.UTF_8) + "! I am running on: " + InetAddress.getLocalHost().getHostAddress();
+            return new String(message.getBytes(), StandardCharsets.UTF_8) + "! I am running on: " + InetAddress.getLocalHost().getHostAddress()
+                    + "User ID is: " + userId;
         } catch (Exception e) {
             return message + "! (Unknown Host)";
         }
