@@ -42,7 +42,7 @@ public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
 
         // 2. 从 HTTP Header 中获取 Authorization
         String authHeader = request.getHeaders().getFirst("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return unauthorized(exchange.getResponse(), "Missing or invalid Authorization header");
         }
 
