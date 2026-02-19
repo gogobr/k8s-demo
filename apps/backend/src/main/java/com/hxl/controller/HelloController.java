@@ -35,8 +35,8 @@ public class HelloController {
         log.info("🔗 Chain start: I am the Frontend!");
 
         // 这里利用 K8s 的服务发现机制！
-        // 我们假设稍后会部署一个叫 k8s-demo-backend 的服务
-        String backendUrl = "http://k8s-demo-backend/hello";
+        // 我们假设稍后会部署一个叫 k8s-backend 的服务
+        String backendUrl = "http://k8s-backend/hello";
 
         String response = restTemplate.getForObject(backendUrl, String.class);
 
