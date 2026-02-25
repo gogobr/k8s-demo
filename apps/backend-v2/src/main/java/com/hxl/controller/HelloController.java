@@ -25,6 +25,9 @@ public class HelloController {
 
         // 直接从 ThreadLocal 中获取用户 ID，无需再通过参数传递
         String userId = UserContextHolder.getUserId();
+
+        // 🔥 增加这一行：打印后端处理日志
+        log.info("后端服务开始处理业务，当前上下文中提取到的用户 ID: {}", userId);
         try {
             return new String(message.getBytes(), StandardCharsets.UTF_8) + "! I am running on V2: " + InetAddress.getLocalHost().getHostAddress()
                     + "User ID is: " + userId;

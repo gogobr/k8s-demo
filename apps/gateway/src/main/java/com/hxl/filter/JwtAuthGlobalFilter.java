@@ -4,6 +4,7 @@ import com.hxl.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 @Component
 public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
 
@@ -61,6 +63,10 @@ public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
 
             // 4. 鉴权通过：拿到用户 ID，塞入请求头，透传给后端微服务
             String userId = claims.getSubject();
+
+            // 🔥 增加这一行：打印带有业务价值的日志
+            log.info("网关鉴权成功，放行请求。当前访问用户 ID: {}", userId);
+
             ServerHttpRequest mutatedRequest = request.mutate()
                     .header("X-User-Id", userId)
                     .build();
