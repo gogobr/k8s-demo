@@ -18,7 +18,7 @@ spec:
                 name: nacos
                 port:
                   number: 8848
-    - host: sentinel.k8s.local
+    - host: sentinel.local
       http:
         paths:
           - path: /
