@@ -1,0 +1,42 @@
+# 这里的配置会覆盖 Chart 里的默认值
+image:
+  repository: mengxu46/k8s-backend-V2
+  tag: "6831b1ba8707e6b892a051f5ffb2d2c4ce482b14"
+# 【关键】注入基础设施的坐标 (指向 middleware 命名空间)
+mysql:
+  host: "mycluster.middleware.svc.cluster.local"
+  port: 6446
+env:
+  springAppName: "k8s-backend-V2"
+  # 我们在这里定义 Service Name，方便模板读取
+  otelServiceName: "k8s-backend-V2"
+service:
+  type: ClusterIP
+  port: 80 # Service 对外暴露的端口 (通常是 80)
+  targetPort: 8080
+ingress:
+  enabled: false
+  className: "nginx" # 【关键】必须指定这个，否则 K8s 不知道谁来管它
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false" # 本地没 HTTPS，强制关掉跳转
+  hosts:
+    - host: backend-V2.local # 【关键】请统一用这个名字，别混用 frontend.local
+      paths:
+        - path: /
+          pathType: Prefix
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  # 关键修改：为了演示效果，我们暂时把 CPU 阈值设为 1%
+  # 只要 K6 一跑，立刻就能触发扩容，不用等 CPU 真的打满
+  targetCPUUtilizationPercentage: 1
+  # 如果有 memory 配置，也可以加上，但 CPU 最直观
+  # targetMemoryUtilizationPercentage: 80
+resources:
+  requests:
+  cpu: "1000m"
+  memory: "1024Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1024Mi"
