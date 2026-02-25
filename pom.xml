@@ -103,7 +103,7 @@
         <module>apps/frontend</module>
         <module>apps/backend</module>
         <module>apps/gateway</module>
-        <module>apps/backend-V2</module>
+        <module>apps/backend-v2</module>
     </modules>
 
 </project>

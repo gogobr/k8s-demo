@@ -1,13 +1,13 @@
-name: Deploy backend-V2 Service # <--- 1. 修改名字
+name: Deploy backend-v2 Service # <--- 1. 修改名字
 
 on:
   push:
     branches: [ "main" ]
     paths:
-      - 'apps/backend-V2/**'              # 1. 监听后端目录下所有文件
-      - '!apps/backend-V2/values.yaml'    # 2. 排除 values.yaml
-      - '!apps/backend-V2/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
-      - '.github/workflows/deploy-backend-V2.yml'
+      - 'apps/backend-v2/**'              # 1. 监听后端目录下所有文件
+      - '!apps/backend-v2/values.yaml'    # 2. 排除 values.yaml
+      - '!apps/backend-v2/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
+      - 'deploy-backend-v2.yml'
   workflow_dispatch:
 
 permissions:
@@ -29,7 +29,7 @@ jobs:
       # 3. 修改 Maven 构建命令，指向后端模块
       - name: Build with Maven
         # -pl 指定模块，-am 连带构建依赖
-        run: mvn clean package -pl apps/backend-V2 -am -DskipTests
+        run: mvn clean package -pl apps/backend-v2 -am -DskipTests
 
       # 🔥【新增步骤 1】设置 QEMU (用于模拟 ARM64 环境)
       - name: Set up QEMU
@@ -49,14 +49,14 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
-          context: ./apps/backend-V2 # <--- 上下文改成后端目录
-          file: ./apps/backend-V2/Dockerfile # <--- Dockerfile 路径
+          context: ./apps/backend-v2 # <--- 上下文改成后端目录
+          file: ./apps/backend-v2/Dockerfile # <--- Dockerfile 路径
           push: true
           # 🔥【新增参数】关键！同时构建 AMD64 和 ARM64 两个版本
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/k8s-backend-V2:${{ github.sha }} 
-            ${{ secrets.DOCKER_USERNAME }}/k8s-backend-V2:latest
+            ${{ secrets.DOCKER_USERNAME }}/k8s-backend-v2:${{ github.sha }} 
+            ${{ secrets.DOCKER_USERNAME }}/k8s-backend-v2:latest
 
       - name: Update Helm Values
         run: |
@@ -66,7 +66,7 @@ jobs:
           NEW_TAG=${{ github.sha }}
           
           # 5. 修改目标 Values 文件路径
-          TARGET_FILE="apps/backend-V2/values.yaml" 
+          TARGET_FILE="apps/backend-v2/values.yaml" 
           
           echo "Updating $TARGET_FILE with tag $NEW_TAG..."
           
@@ -78,7 +78,7 @@ jobs:
           
           if [ -n "$(git status --porcelain)" ]; then
             git add $TARGET_FILE
-            git commit -m "chore(ci): update backend-V2 image tag to $NEW_TAG [skip ci]"
+            git commit -m "chore(ci): update backend-v2 image tag to $NEW_TAG [skip ci]"
           
             git pull --rebase origin main
             git push

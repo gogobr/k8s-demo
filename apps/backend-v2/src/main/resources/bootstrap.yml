@@ -1,6 +1,6 @@
 spring:
   application:
-    name: k8s-backend-V2 # 对应 Nacos 里的 Data ID 前缀
+    name: k8s-backend-v2 # 对应 Nacos 里的 Data ID 前缀
   cloud:
     nacos:
       config:
