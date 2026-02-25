@@ -1,6 +1,7 @@
 package com.hxl.controller;
 
 import com.hxl.context.UserContextHolder;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +18,11 @@ public class HelloController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @SneakyThrows
     @GetMapping(value = "/hello" , produces = "text/plain; charset=UTF-8")
     public String hello() {
+
+        Thread.sleep(5000);
         // 👇 修改点：尝试获取环境变量 GREETING_MESSAGE
         // 如果 K8s 没传这个变量，就默认显示 "Hello K8s (Default)"
         String message = System.getenv().getOrDefault("GREETING_MESSAGE", "Hello K8s (Default)");
