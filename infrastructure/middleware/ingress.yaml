@@ -18,3 +18,13 @@ spec:
                 name: nacos
                 port:
                   number: 8848
+    - host: sentinel.k8s.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sentinel
+                port:
+                  number: 8080
