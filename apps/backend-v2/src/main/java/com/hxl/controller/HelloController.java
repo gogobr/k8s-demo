@@ -27,7 +27,7 @@ public class HelloController {
         String userId = UserContextHolder.getUserId();
 
         // 🔥 增加这一行：打印后端处理日志
-        log.info("后端服务开始处理业务，当前上下文中提取到的用户 ID: {}", userId);
+        log.info("后端服务开始处理业务，当前上下文中提取到的用户 ID v2: {}", userId);
         try {
             return new String(message.getBytes(), StandardCharsets.UTF_8) + "! I am running on V2: " + InetAddress.getLocalHost().getHostAddress()
                     + "User ID is: " + userId;

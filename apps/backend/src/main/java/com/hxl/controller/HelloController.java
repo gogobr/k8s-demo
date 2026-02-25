@@ -22,7 +22,6 @@ public class HelloController {
     @GetMapping(value = "/hello" , produces = "text/plain; charset=UTF-8")
     public String hello() {
 
-        Thread.sleep(5000);
         // 👇 修改点：尝试获取环境变量 GREETING_MESSAGE
         // 如果 K8s 没传这个变量，就默认显示 "Hello K8s (Default)"
         String message = System.getenv().getOrDefault("GREETING_MESSAGE", "Hello K8s (Default)");
@@ -42,11 +41,11 @@ public class HelloController {
     // 👇 2. 模拟“前端”调用“后端”的接口
     @GetMapping("/chain")
     public String chain() {
-        log.info("🔗 Chain start: I am the Frontend!");
+        log.info("🔗 Chain start: I am the Frontend v1! ID: {}", UserContextHolder.getUserId());
 
         // 这里利用 K8s 的服务发现机制！
         // 我们假设稍后会部署一个叫 k8s-backend 的服务
-        String backendUrl = "http://k8s-backend/hello";
+        String backendUrl = "http://k8s-backend-v2/hello";
 
         String response = restTemplate.getForObject(backendUrl, String.class);
 
