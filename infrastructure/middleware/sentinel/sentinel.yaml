@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel-dashboard
+  namespace: middleware
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentinel-dashboard
+  template:
+    metadata:
+      labels:
+        app: sentinel-dashboard
+    spec:
+      containers:
+        - name: sentinel-dashboard
+          # 社区广泛使用的稳定镜像
+          image: bladex/sentinel-dashboard:1.8.6
+          ports:
+            - containerPort: 8080
+          env:
+            - name: Dcsp.sentinel.dashboard.auth.username
+              value: "sentinel"
+            - name: Dcsp.sentinel.dashboard.auth.password
+              value: "sentinel"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-dashboard
+  namespace: middleware
+spec:
+  type: NodePort # 方便你从宿主机 Mac 直接访问
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080
+  selector:
+    app: sentinel-dashboard
