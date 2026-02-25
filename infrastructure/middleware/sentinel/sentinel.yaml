@@ -34,7 +34,7 @@ spec:
   type: NodePort # 方便你从宿主机 Mac 直接访问
   ports:
     - port: 8080
-      targetPort: 8080
+      targetPort: 8858
       nodePort: 30080
   selector:
     app: sentinel-dashboard
