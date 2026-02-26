@@ -16,7 +16,7 @@ spec:
       containers:
         - name: sentinel-dashboard
           # 社区广泛使用的稳定镜像
-          image: bladex/sentinel-dashboard:1.8.6
+          image: mengxu46/sentinel-dashboard-nacos:v1
           ports:
             - containerPort: 8080
           env:
