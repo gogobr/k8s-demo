@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: marketing-activity # 对应 Nacos 里的 Data ID 前缀
+  cloud:
+    nacos:
+      config:
+        # Nacos 在 K8s 里的 DNS 地址
+        server-addr: nacos.middleware.svc.cluster.local:8848
+        file-extension: yaml
+        # 认证信息
+#        username: nacos
+#        password: nacos
+      discovery:
+        # 🔥 修改点：优先读取环境变量 NACOS_SERVER_ADDR，读不到才用后面的默认值
+        server-addr: nacos.middleware.svc.cluster.local:8848

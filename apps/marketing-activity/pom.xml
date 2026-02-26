@@ -9,11 +9,10 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.hxl</groupId>
-    <artifactId>k8s-demo-backend</artifactId>
+    <artifactId>marketing-activity</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>k8s-demo-backend</name>
-    <description>k8s-demo-backend</description>
+    <name>marketing-activity</name>
+    <description>marketing-activity</description>
     <packaging>jar</packaging>
 
     <properties>
@@ -22,20 +21,6 @@
         <spring-cloud-alibaba.version>2023.0.0.0-RC1</spring-cloud-alibaba.version>
     </properties>
     <dependencies>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-httpclient</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>

@@ -104,6 +104,7 @@
         <module>apps/backend</module>
         <module>apps/gateway</module>
         <module>apps/backend-v2</module>
+        <module>apps/marketing-activity</module>
     </modules>
 
 </project>
