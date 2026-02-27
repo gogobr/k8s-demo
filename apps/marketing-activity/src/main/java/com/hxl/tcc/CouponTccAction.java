@@ -19,7 +19,7 @@ public interface CouponTccAction {
      */
     @TwoPhaseBusinessAction(name = "issueCouponTcc", commitMethod = "confirm", rollbackMethod = "cancel",
             useTCCFence = true)
-    boolean tryIssue(@BusinessActionContextParameter(paramName = "userId", isParamInProperty = true) String userId);
+    boolean tryIssue(@BusinessActionContextParameter(paramName = "userId", index = 0) String userId);
 
     /**
      * 二阶段：Confirm (确认执行)
