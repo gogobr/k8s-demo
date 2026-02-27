@@ -1,7 +1,7 @@
 # 这里的配置会覆盖 Chart 里的默认值
 image:
   repository: mengxu46/k8s-backend
-  tag: "07f82b06b3ea13b906c8c1ed014d9c2a3810653a"
+  tag: "09c0c3fded90e53c529d8c643f1d083e97aed1e6"
 # 【关键】注入基础设施的坐标 (指向 middleware 命名空间)
 mysql:
   host: "mycluster.middleware.svc.cluster.local"
