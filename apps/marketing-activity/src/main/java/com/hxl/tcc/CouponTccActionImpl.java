@@ -1,6 +1,7 @@
 package com.hxl.tcc;
 
 import io.seata.rm.tcc.api.BusinessActionContext;
+import io.seata.rm.tcc.api.BusinessActionContextParameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,7 @@ import java.util.Map;
 public class CouponTccActionImpl implements CouponTccAction{
 
     @Override
-    public boolean tryIssue(String userId) {
+    public boolean tryIssue(@BusinessActionContextParameter(paramName = "userId")String userId) {
         // 在真实大厂中，这里执行：UPDATE coupon_stock SET frozen = frozen + 1, available = available - 1 WHERE ...
         log.info("============== [TCC 一阶段 - Try] ==============");
         log.info("1. 检查库存...");
