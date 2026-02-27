@@ -3,6 +3,9 @@ package com.hxl.tcc;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -18,9 +21,11 @@ public class CouponTccActionImpl implements CouponTccAction{
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean confirm(BusinessActionContext actionContext) {
-        // 从上下文中把一阶段的参数捞出来
-        String userId = (String) actionContext.getActionContext("userId");
+        // 修复参数丢失：从 ActionContext 的 ActionContext 参数 Map 中安全提取
+        Map<String, Object> contextMap = actionContext.getActionContext();
+        String userId = contextMap != null ? String.valueOf(contextMap.get("userId")) : "未知用户";
         String xid = actionContext.getXid();
 
         // 真实大厂中：UPDATE coupon_stock SET frozen = frozen - 1, used = used + 1 WHERE ...
@@ -30,9 +35,11 @@ public class CouponTccActionImpl implements CouponTccAction{
         return true;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean cancel(BusinessActionContext actionContext) {
-        String userId = (String) actionContext.getActionContext("userId");
+        Map<String, Object> contextMap = actionContext.getActionContext();
+        String userId = contextMap != null ? String.valueOf(contextMap.get("userId")) : "未知用户";
         String xid = actionContext.getXid();
 
         // 真实大厂中：UPDATE coupon_stock SET frozen = frozen - 1, available = available + 1 WHERE ...

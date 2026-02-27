@@ -17,8 +17,9 @@ public interface CouponTccAction {
      * @TwoPhaseBusinessAction 定义了二阶段的确认和回滚方法名
      * @BusinessActionContextParameter 将参数塞入上下文中，方便二阶段获取
      */
-    @TwoPhaseBusinessAction(name = "issueCouponTcc", commitMethod = "confirm", rollbackMethod = "cancel")
-    boolean tryIssue(@BusinessActionContextParameter(paramName = "userId") String userId);
+    @TwoPhaseBusinessAction(name = "issueCouponTcc", commitMethod = "confirm", rollbackMethod = "cancel",
+            useTCCFence = true)
+    boolean tryIssue(@BusinessActionContextParameter(paramName = "userId", isParamInProperty = true) String userId);
 
     /**
      * 二阶段：Confirm (确认执行)
