@@ -1,0 +1,26 @@
+// 声明使用 proto3 语法
+syntax = "proto3";
+
+// 生成 Java 代码的包名
+option java_package = "com.hxl.grpc.marketing";
+// 生成多个独立的类文件
+option java_multiple_files = true;
+// 生成的外部类名
+option java_outer_classname = "MarketingProtoTcc";
+
+// 定义服务 (对应 Java 里的 Interface)
+service MarketingTccService {
+  // 定义一个发券的 RPC 方法
+  rpc IssueCoupon (IssueCouponTccRequest) returns (IssueCouponTccResponse);
+}
+
+// 定义请求消息体 (对应 Java 里的 Request DTO)
+message IssueCouponTccRequest {
+  string user_id = 1; // 这里的 1 是字段的二进制序号，不可重复
+}
+
+// 定义响应消息体 (对应 Java 里的 Response DTO)
+message IssueCouponTccResponse {
+  int32 code = 1;
+  string message = 2;
+}

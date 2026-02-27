@@ -1,9 +1,7 @@
 package com.hxl.controller;
 
 import com.hxl.feign.MarketingClient;
-import com.hxl.grpc.marketing.IssueCouponRequest;
-import com.hxl.grpc.marketing.IssueCouponResponse;
-import com.hxl.grpc.marketing.MarketingServiceGrpc;
+import com.hxl.grpc.marketing.*;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
@@ -21,9 +19,13 @@ public class BackendController {
     @Autowired
     private MarketingClient marketingClient;
 
-    // ⭐️ 灵魂注解：直接向 Nacos 里的 marketing-activity 寻址，走 gRPC 协议！
+    // 直接向 Nacos 里的 marketing-activity 寻址，走 gRPC 协议！
     @GrpcClient("marketing-activity")
     private MarketingServiceGrpc.MarketingServiceBlockingStub marketingGrpcStub;
+
+    // 直接向 Nacos 里的 marketing-activity 寻址，走 gRPC 协议！
+    @GrpcClient("marketing-activity")
+    private MarketingTccServiceGrpc.MarketingTccServiceBlockingStub marketingTccGrpcStub;
 
     @Autowired
     private JdbcTemplate jdbcTemplate; // 随便注入一个 DB 操作工具模拟本地落库
@@ -81,5 +83,23 @@ public class BackendController {
         jdbcTemplate.update("INSERT INTO local_tax_record (user_id, amount) VALUES (?, ?)", "U_TX_111", 100);
 
         return "执行正确";
+    }
+
+    @GetMapping("/do-grpc-tx-tcc/error")
+    @GlobalTransactional(name = "tax-finance-create-tx", rollbackFor = Exception.class)
+    public String doGrpcTxTccActionError() {
+
+        // 1. 先执行远端 gRPC 调用 (扣库存 / 发券)
+        IssueCouponTccRequest request = IssueCouponTccRequest.newBuilder().setUserId("U_TX_111").build();
+        marketingTccGrpcStub.issueCoupon(request); // 这步会成功写入下游数据库
+
+        // 2. 模拟本地数据库操作
+        jdbcTemplate.update("INSERT INTO local_tax_record (user_id, amount) VALUES (?, ?)", "U_TX_111", 100);
+
+        // 3. 💥 致命一击：模拟本地代码突发宕机或空指针异常！
+        log.info("准备抛出异常，测试 Seata 全局回滚...");
+        int error = 1 / 0; // 引发 ArithmeticException
+
+        return "不会执行到这里";
     }
 }
