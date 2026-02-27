@@ -1,7 +1,7 @@
 # 这里的配置会覆盖 Chart 里的默认值
 image:
   repository: mengxu46/marketing-activity
-  tag: "754c44b7cd5aaf6f3e38350902835f8f6f04c947"
+  tag: "0a7b42bb4179b9de9d76e3c5c08e02866a19edd1"
 # 【关键】注入基础设施的坐标 (指向 middleware 命名空间)
 mysql:
   host: "mycluster.middleware.svc.cluster.local"
