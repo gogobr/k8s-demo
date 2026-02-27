@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seata-server
+  namespace: middleware # 替换成你实际的命名空间
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seata-server
+  template:
+    metadata:
+      labels:
+        app: seata-server
+    spec:
+      containers:
+        - name: seata-server
+          image: seataio/seata-server:1.8.0 # 建议与你 Spring Cloud Alibaba 匹配的稳定版本
+          ports:
+            - containerPort: 8091 # Seata 默认 RPC 端口
+          env:
+            # 开启 Nacos 注册中心
+            - name: SEATA_REGISTRY_TYPE
+              value: "nacos"
+            - name: SEATA_REGISTRY_NACOS_SERVER_ADDR
+              value: "nacos.middleware.svc.cluster.local:8848" # Nacos 地址
+            - name: SEATA_REGISTRY_NACOS_GROUP
+              value: "SEATA_GROUP" # 必须与你微服务里配的 registry.nacos.group 一致
+            - name: SEATA_REGISTRY_NACOS_APPLICATION
+              value: "seata-server"
+
+            # 开启 Nacos 配置中心 (可选，用于动态调整 Seata 服务端参数)
+            - name: SEATA_CONFIG_TYPE
+              value: "nacos"
+            - name: SEATA_CONFIG_NACOS_SERVER_ADDR
+              value: "nacos.middleware.svc.cluster.local:8848"

@@ -4,9 +4,11 @@ import com.hxl.feign.MarketingClient;
 import com.hxl.grpc.marketing.IssueCouponRequest;
 import com.hxl.grpc.marketing.IssueCouponResponse;
 import com.hxl.grpc.marketing.MarketingServiceGrpc;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +24,9 @@ public class BackendController {
     // ⭐️ 灵魂注解：直接向 Nacos 里的 marketing-activity 寻址，走 gRPC 协议！
     @GrpcClient("marketing-activity")
     private MarketingServiceGrpc.MarketingServiceBlockingStub marketingGrpcStub;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate; // 随便注入一个 DB 操作工具模拟本地落库
 
     @GetMapping("/do-action")
     public String doAction() {
@@ -44,5 +49,23 @@ public class BackendController {
         IssueCouponResponse response = marketingGrpcStub.issueCoupon(request);
 
         return "gRPC 响应 -> Code: " + response.getCode() + ", Msg: " + response.getMessage();
+    }
+
+    @GetMapping("/do-grpc-tx")
+    @GlobalTransactional(name = "tax-finance-create-tx", rollbackFor = Exception.class)
+    public String doGrpcTxAction() {
+
+        // 1. 先执行远端 gRPC 调用 (扣库存 / 发券)
+        IssueCouponRequest request = IssueCouponRequest.newBuilder().setUserId("U_TX_111").build();
+        marketingGrpcStub.issueCoupon(request); // 这步会成功写入下游数据库
+
+        // 2. 模拟本地数据库操作
+        jdbcTemplate.update("INSERT INTO local_tax_record (user_id, amount) VALUES (?, ?)", "U_TX_111", 100);
+
+        // 3. 💥 致命一击：模拟本地代码突发宕机或空指针异常！
+        log.info("准备抛出异常，测试 Seata 全局回滚...");
+        int error = 1 / 0; // 引发 ArithmeticException
+
+        return "不会执行到这里";
     }
 }

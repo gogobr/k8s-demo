@@ -6,10 +6,15 @@ import com.hxl.grpc.marketing.MarketingServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @Slf4j
 @GrpcService
 public class MarketingGrpcServiceImpl extends MarketingServiceGrpc.MarketingServiceImplBase {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public void issueCoupon(IssueCouponRequest request, StreamObserver<IssueCouponResponse> responseObserver) {
@@ -17,6 +22,9 @@ public class MarketingGrpcServiceImpl extends MarketingServiceGrpc.MarketingServ
 
         String userId = request.getUserId();
         log.info("模拟处理，用户 {} 请求发放优惠券", userId);
+
+        // 2. 模拟本地数据库操作
+        jdbcTemplate.update("INSERT INTO coupon_info (user_id, amount) VALUES (?, ?)", "U_TX_111", 100);
 
         // 构造响应对象 (使用 Builder 模式)
         IssueCouponResponse response = IssueCouponResponse.newBuilder()
