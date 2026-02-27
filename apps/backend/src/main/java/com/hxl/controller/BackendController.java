@@ -51,9 +51,9 @@ public class BackendController {
         return "gRPC 响应 -> Code: " + response.getCode() + ", Msg: " + response.getMessage();
     }
 
-    @GetMapping("/do-grpc-tx")
+    @GetMapping("/do-grpc-tx/error")
     @GlobalTransactional(name = "tax-finance-create-tx", rollbackFor = Exception.class)
-    public String doGrpcTxAction() {
+    public String doGrpcTxActionError() {
 
         // 1. 先执行远端 gRPC 调用 (扣库存 / 发券)
         IssueCouponRequest request = IssueCouponRequest.newBuilder().setUserId("U_TX_111").build();
@@ -67,5 +67,19 @@ public class BackendController {
         int error = 1 / 0; // 引发 ArithmeticException
 
         return "不会执行到这里";
+    }
+
+    @GetMapping("/do-grpc-tx")
+    @GlobalTransactional(name = "tax-finance-create-tx", rollbackFor = Exception.class)
+    public String doGrpcTxAction() {
+
+        // 1. 先执行远端 gRPC 调用 (扣库存 / 发券)
+        IssueCouponRequest request = IssueCouponRequest.newBuilder().setUserId("U_TX_111").build();
+        marketingGrpcStub.issueCoupon(request); // 这步会成功写入下游数据库
+
+        // 2. 模拟本地数据库操作
+        jdbcTemplate.update("INSERT INTO local_tax_record (user_id, amount) VALUES (?, ?)", "U_TX_111", 100);
+
+        return "执行正确";
     }
 }
