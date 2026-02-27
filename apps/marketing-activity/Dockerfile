@@ -1,14 +1,11 @@
 # 1. 基础镜像
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:21-jre-jammy
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
 # 2. 设置工作目录
 WORKDIR /app
-
-# 增加这一行，安装 glibc 兼容层
-RUN apk add --no-cache gcompat
 
 # 3. 【关键】下载 OpenTelemetry Java Agent
 # 生产环境通常会把这个 jar 包打在基础镜像里，或者挂载进去，这里演示直接下载
