@@ -4,15 +4,19 @@ import com.hxl.grpc.marketing.IssueCouponRequest;
 import com.hxl.grpc.marketing.IssueCouponResponse;
 import com.hxl.grpc.marketing.MarketingServiceGrpc;
 import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 
+@Slf4j
 @GrpcService
 public class MarketingGrpcServiceImpl extends MarketingServiceGrpc.MarketingServiceImplBase {
 
     @Override
     public void issueCoupon(IssueCouponRequest request, StreamObserver<IssueCouponResponse> responseObserver) {
+        log.info("收到 gRPC 请求，用户ID: {}", request.getUserId());
+
         String userId = request.getUserId();
-        System.out.println("收到 gRPC 请求，用户ID: " + userId);
+        log.info("模拟处理，用户 {} 请求发放优惠券", userId);
 
         // 构造响应对象 (使用 Builder 模式)
         IssueCouponResponse response = IssueCouponResponse.newBuilder()
