@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: k8s-backend
+  name: backend
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -10,9 +10,7 @@ spec:
   source:
     repoURL: https://github.com/gogobr/k8s-demo.git
     targetRevision: main
-    path: apps  # 指向应用目录
-    directory:
-      recurse: true       # 【关键】递归部署该目录下所有子目录
+    path: apps/backend  # 指向应用目录
   destination:
     server: https://kubernetes.default.svc
     namespace: default # 【关键】部署到中间件专用命名空间
