@@ -4,9 +4,9 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'apps/marketing-activity/**'              # 1. 监听后端目录下所有文件
-      - '!apps/marketing-activity/values.yaml'    # 2. 排除 values.yaml
-      - '!apps/marketing-activity/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
+      - '../../codes/marketing-activity/**'              # 1. 监听后端目录下所有文件
+      - '!codes/marketing-activity/values.yaml'    # 2. 排除 values.yaml
+      - '!codes/marketing-activity/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
       - 'deploy-marketing-activity.yml'
   workflow_dispatch:
 
@@ -29,7 +29,7 @@ jobs:
       # 3. 修改 Maven 构建命令，指向后端模块
       - name: Build with Maven
         # -pl 指定模块，-am 连带构建依赖
-        run: mvn clean package -pl apps/marketing-activity -am -DskipTests
+        run: mvn clean package -pl codes/marketing-activity -am -DskipTests
 
       # 🔥【新增步骤 1】设置 QEMU (用于模拟 ARM64 环境)
       - name: Set up QEMU
@@ -49,8 +49,8 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
-          context: ./apps/marketing-activity # <--- 上下文改成后端目录
-          file: ./apps/marketing-activity/Dockerfile # <--- Dockerfile 路径
+          context: ./codes/marketing-activity # <--- 上下文改成后端目录
+          file: ./codes/marketing-activity/Dockerfile # <--- Dockerfile 路径
           push: true
           # 🔥【新增参数】关键！同时构建 AMD64 和 ARM64 两个版本
           platforms: linux/amd64,linux/arm64
@@ -66,7 +66,7 @@ jobs:
           NEW_TAG=${{ github.sha }}
           
           # 5. 修改目标 Values 文件路径
-          TARGET_FILE="apps/marketing-activity/values.yaml" 
+          TARGET_FILE="codes/marketing-activity/values.yaml" 
           
           echo "Updating $TARGET_FILE with tag $NEW_TAG..."
           

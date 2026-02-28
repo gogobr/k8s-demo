@@ -12,7 +12,7 @@ spec:
     helm:
       valueFiles:
         # 这里假设你在 gitops 目录下放了差异化配置，或者直接在 chart 里放
-        - ../../apps/gateway/values.yaml
+        - ../../codes/gateway/values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: default    # 业务应用在 default

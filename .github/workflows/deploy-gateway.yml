@@ -4,9 +4,9 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'apps/gateway/**' # 只有前端代码变动时才触发
-      - '!apps/gateway/values.yaml'    # 2. 排除 values.yaml
-      - '!apps/gateway/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
+      - '../../codes/gateway/**' # 只有前端代码变动时才触发
+      - '!codes/gateway/values.yaml'    # 2. 排除 values.yaml
+      - '!codes/gateway/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
       - '.github/workflows/deploy-gateway.yml'
     # 【新增】添加这一行，开启手动触发按钮
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
 
       # 3. Maven 编译打包 (只构建前端模块)
       - name: Build with Maven
-        run: mvn clean package -pl apps/gateway -am -DskipTests
+        run: mvn clean package -pl codes/gateway -am -DskipTests
 
           # 🔥【新增步骤 1】设置 QEMU (用于模拟 ARM64 环境)
       - name: Set up QEMU
@@ -55,8 +55,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v4
         with:
-          context: ./apps/gateway
-          file: ./apps/gateway/Dockerfile
+          context: ./codes/gateway
+          file: ./codes/gateway/Dockerfile
           push: true
           # 🔥【新增参数】关键！同时构建 AMD64 和 ARM64 两个版本
           platforms: linux/amd64,linux/arm64
@@ -73,8 +73,8 @@ jobs:
           # 设定新的 Tag
           NEW_TAG=${{ github.sha }}
           
-          # 请确保你的 apps/gateway 目录下确实有 values.yaml 这个文件！
-          TARGET_FILE="apps/gateway/values.yaml"
+          # 请确保你的 codes/gateway 目录下确实有 values.yaml 这个文件！
+          TARGET_FILE="codes/gateway/values.yaml"
           
           echo "Updating $TARGET_FILE with tag $NEW_TAG..."
           

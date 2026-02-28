@@ -100,11 +100,11 @@
     </dependencyManagement>
 
     <modules>
-        <module>apps/frontend</module>
-        <module>apps/backend</module>
-        <module>apps/gateway</module>
-        <module>apps/backend-v2</module>
-        <module>apps/marketing-activity</module>
+        <module>codes/frontend</module>
+        <module>codes/backend</module>
+        <module>codes/gateway</module>
+        <module>codes/backend-v2</module>
+        <module>codes/marketing-activity</module>
     </modules>
 
 </project>

@@ -4,9 +4,9 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'apps/frontend/**' # 只有前端代码变动时才触发
-      - '!apps/frontend/values.yaml'    # 2. 排除 values.yaml
-      - '!apps/frontend/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
+      - '../../codes/frontend/**' # 只有前端代码变动时才触发
+      - '!codes/frontend/values.yaml'    # 2. 排除 values.yaml
+      - '!codes/frontend/Chart.yaml'     # 3. 排除 Chart.yaml，改版本号也不需要重打镜像
       - '.github/workflows/deploy-frontend.yml'
     # 【新增】添加这一行，开启手动触发按钮
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
 
       # 3. Maven 编译打包 (只构建前端模块)
       - name: Build with Maven
-        run: mvn clean package -pl apps/frontend -am -DskipTests
+        run: mvn clean package -pl codes/frontend -am -DskipTests
 
       # 🔥【新增步骤 1】设置 QEMU (用于模拟 ARM64 环境)
       - name: Set up QEMU
@@ -55,8 +55,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v4
         with:
-          context: ./apps/frontend
-          file: ./apps/frontend/Dockerfile
+          context: ./codes/frontend
+          file: ./codes/frontend/Dockerfile
           push: true
           # 🔥【新增参数】关键！同时构建 AMD64 和 ARM64 两个版本
           platforms: linux/amd64,linux/arm64
@@ -73,9 +73,9 @@ jobs:
           # 设定新的 Tag
           NEW_TAG=${{ github.sha }}
           
-          # 【修复 2】路径必须指向 apps/frontend/values.yaml
-          # 请确保你的 apps/frontend 目录下确实有 values.yaml 这个文件！
-          TARGET_FILE="apps/frontend/values.yaml"
+          # 【修复 2】路径必须指向 codes/frontend/values.yaml
+          # 请确保你的 codes/frontend 目录下确实有 values.yaml 这个文件！
+          TARGET_FILE="codes/frontend/values.yaml"
           
           echo "Updating $TARGET_FILE with tag $NEW_TAG..."
           
