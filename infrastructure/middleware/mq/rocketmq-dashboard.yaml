@@ -22,6 +22,9 @@ spec:
             # 🌟 核心：告诉 Dashboard 去哪里找 NameServer
             - name: JAVA_OPTS
               value: "-Drocketmq.config.namesrvAddr=rocketmq-svc.default.svc.cluster.local:9876"
+                #核心修复：直接使用官方约定的环境变量名
+            - name: NAMESRV_ADDR
+              value: "rocketmq-svc.default.svc.cluster.local:9876"
 ---
 apiVersion: v1
 kind: Service
