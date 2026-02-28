@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocketmq-dashboard
+  namespace: middleware
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocketmq-dashboard
+  template:
+    metadata:
+      labels:
+        app: rocketmq-dashboard
+    spec:
+      containers:
+        - name: rocketmq-dashboard
+          image: apacherocketmq/rocketmq-dashboard:1.0.0
+          ports:
+            - containerPort: 8080
+          env:
+            # 🌟 核心：告诉 Dashboard 去哪里找 NameServer
+            - name: JAVA_OPTS
+              value: "-Drocketmq.config.namesrvAddr=rocketmq-svc.default.svc.cluster.local:9876"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq-dashboard-svc
+  namespace: default
+spec:
+  # 使用 NodePort 直接暴露到你的宿主机本地端口
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30800 # 映射到你电脑的 30800 端口
+  selector:
+    app: rocketmq-dashboard

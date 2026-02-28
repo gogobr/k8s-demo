@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocketmq
+  namespace: middleware
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocketmq
+  template:
+    metadata:
+      labels:
+        app: rocketmq
+    spec:
+      containers:
+        - name: namesrv
+          image: apache/rocketmq:5.2.0
+          command: ["sh", "mqnamesrv"]
+          ports:
+            - containerPort: 9876
+        - name: broker
+          image: apache/rocketmq:5.2.0
+          command: ["sh", "mqbroker", "-n", "localhost:9876", "-c", "/opt/rocketmq/conf/broker.conf"]
+          env:
+            - name: autoCreateTopicEnable
+              value: "true" # 开启自动创建 Topic，方便开发调试
+          ports:
+            - containerPort: 10911
+            - containerPort: 10909
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq-svc
+  namespace: default
+spec:
+  ports:
+    - port: 9876
+      name: namesrv
+    - port: 10911
+      name: broker
+  selector:
+    app: rocketmq

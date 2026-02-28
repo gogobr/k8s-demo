@@ -5,6 +5,7 @@ import com.hxl.grpc.marketing.*;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,9 @@ public class BackendController {
 
     @Autowired
     private MarketingClient marketingClient;
+
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
     // 直接向 Nacos 里的 marketing-activity 寻址，走 gRPC 协议！
     @GrpcClient("marketing-activity")
@@ -101,5 +105,21 @@ public class BackendController {
         int error = 1 / 0; // 引发 ArithmeticException
 
         return "不会执行到这里";
+    }
+
+
+    @GetMapping("/do-mq-action")
+    public String doMqAction() {
+        String userId = "U_MQ_888";
+        log.info("============== [前端请求到达] ==============");
+        log.info("1. 核心业务：订单落库成功 (极速完成)...");
+
+        // 🌟 2. 异步解耦：发送 MQ 消息通知下游发券
+        // 参数 1：Topic 名称；参数 2：消息体内容
+        rocketMQTemplate.convertAndSend("MARKETING_COUPON_TOPIC", userId);
+
+        log.info("2. 消息已投递到 RocketMQ，核心线程立即释放！");
+
+        return "操作成功！优惠券将在稍后发放至您的账户。";
     }
 }
