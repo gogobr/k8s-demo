@@ -16,15 +16,25 @@ spec:
       containers:
         - name: namesrv
           image: apache/rocketmq:5.2.0
-          command: ["sh", "mqnamesrv"]
+          command: [ "sh", "mqnamesrv" ]
           ports:
             - containerPort: 9876
+          env:
+            # 强行瘦身：限制 NameServer 内存为 256M
+            - name: JAVA_OPT_EXT
+              value: "-server -Xms256m -Xmx256m -Xmn128m"
+
         - name: broker
           image: apache/rocketmq:5.2.0
-          command: ["sh", "mqbroker", "-n", "localhost:9876", "-c", "/opt/rocketmq/conf/broker.conf"]
+          command:
+            - sh
+            - -c
+            - "echo 'autoCreateTopicEnable=true' > /tmp/broker.conf && sh mqbroker -n localhost:9876 -c /tmp/broker.conf"
           env:
-            - name: autoCreateTopicEnable
-              value: "true" # 开启自动创建 Topic，方便开发调试
+            # 强行瘦身：限制 Broker 内存为 512M (否则默认 8G 直接炸)
+            - name: JAVA_OPT_EXT
+              value: "-server -Xms512m -Xmx512m -Xmn256m"
+
           ports:
             - containerPort: 10911
             - containerPort: 10909
