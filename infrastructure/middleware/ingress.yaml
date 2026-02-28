@@ -36,6 +36,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: sentinel-dashboard
+                name: rocketmq-svc
                 port:
                   number: 8080
