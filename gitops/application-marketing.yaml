@@ -13,7 +13,7 @@ spec:
     path: apps/marketing  # 指向应用目录
   destination:
     server: https://kubernetes.default.svc
-    namespace: default # 【关键】部署到中间件专用命名空间
+    namespace: argocd # 【关键】部署到中间件专用命名空间
   syncPolicy:
     automated:
       prune: true
