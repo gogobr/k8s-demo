@@ -5,12 +5,17 @@ import com.hxl.grpc.marketing.*;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -121,5 +126,32 @@ public class BackendController {
         log.info("2. 消息已投递到 RocketMQ，核心线程立即释放！");
 
         return "操作成功！优惠券将在稍后发放至您的账户。";
+    }
+
+    @GetMapping("/do-tx-mq")
+    public String doTxMqAction() {
+        String userId = "U_TX_MQ_001";
+        // 1. 生成一个全局唯一的事务ID (极其关键，用于后续对账回查)
+        String transactionId = UUID.randomUUID().toString();
+
+        log.info("============== [前端请求到达] ==============");
+        log.info("准备发送 RocketMQ 半消息，事务ID: {}", transactionId);
+
+        // 2. 构造 Spring Messaging 的标准 Message 对象
+        Message<String> message = MessageBuilder.withPayload(userId)
+                // 将事务ID塞入消息头
+                .setHeader("TRANSACTION_ID", transactionId)
+                .build();
+
+        // 3. 致命杀招：发送事务半消息！
+        // 参数：Topic名称, 消息体, 传给本地事务的额外参数(此处传userId方便业务处理)
+        TransactionSendResult sendResult = rocketMQTemplate.sendMessageInTransaction(
+                "MARKETING_COUPON_TOPIC",
+                message,
+                userId
+        );
+
+        log.info("半消息发送结果: {}", sendResult.getSendStatus());
+        return "操作已受理！系统正在极速处理中...";
     }
 }
