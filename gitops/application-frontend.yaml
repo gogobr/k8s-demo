@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-frontend
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gogobr/k8s-demo.git
+    targetRevision: main
+    path: apps  # 指向应用目录
+    directory:
+      recurse: true       # 【关键】递归部署该目录下所有子目录
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default # 【关键】部署到中间件专用命名空间
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true # 自动创建 default 命名空间
