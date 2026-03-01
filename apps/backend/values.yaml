@@ -1,0 +1,15 @@
+# 🌟 控制 v1 的部署参数
+backend-v1:
+  fullnameOverride: "k8s-backend" # 控制 Deployment 和 Service 的名字
+  image:
+    repository: mengxu46/k8s-backend
+    tag: "v1.0"
+  # 其他 v1 专属配置...
+
+# 🌟 控制 v2 的部署参数
+backend-v2:
+  fullnameOverride: "k8s-backend-v2"
+  image:
+    repository: mengxu46/k8s-backend-v2
+    tag: "v2.0"
+  # 其他 v2 专属配置...

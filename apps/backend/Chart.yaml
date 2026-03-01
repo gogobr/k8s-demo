@@ -1,0 +1,16 @@
+apiVersion: v2
+name: backend-domain
+description: 后端业务域全家桶 (包含 v1 和 v2)
+version: 1.0.0
+
+dependencies:
+  # 引入 v1
+  - name: spring-boot-app
+    version: 0.1.0 # 填你实际模板的版本号
+    repository: "file://../../charts/spring-boot-app" # 指向本地通用模板
+    alias: backend-v1 # 🌟 别名极其重要
+  # 引入 v2
+  - name: spring-boot-app
+    version: 0.1.0
+    repository: "file://../../charts/spring-boot-app"
+    alias: backend-v2

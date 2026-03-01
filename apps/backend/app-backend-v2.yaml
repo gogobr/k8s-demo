@@ -1,22 +1,22 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: k8s-backend-v2
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/gogobr/k8s-demo.git
-    targetRevision: main
-    path: charts/spring-boot-app  # 指向通用 Chart
-    helm:
-      valueFiles:
-        # 这里假设你在 gitops 目录下放了差异化配置，或者直接在 chart 里放
-        - ../../codes/backend-v2/values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: default    # 业务应用在 default
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+#apiVersion: argoproj.io/v1alpha1
+#kind: Application
+#metadata:
+#  name: k8s-backend-v2
+#  namespace: argocd
+#spec:
+#  project: default
+#  source:
+#    repoURL: https://github.com/gogobr/k8s-demo.git
+#    targetRevision: main
+#    path: charts/spring-boot-app  # 指向通用 Chart
+#    helm:
+#      valueFiles:
+#        # 这里假设你在 gitops 目录下放了差异化配置，或者直接在 chart 里放
+#        - ../../codes/backend-v2/values.yaml
+#  destination:
+#    server: https://kubernetes.default.svc
+#    namespace: default    # 业务应用在 default
+#  syncPolicy:
+#    automated:
+#      prune: true
+#      selfHeal: true
