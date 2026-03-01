@@ -18,3 +18,27 @@ resources:
   limits:
     cpu: "1000m"
     memory: "1024Mi"
+
+ingress:
+  enabled: false # 默认关闭，绝对防止空指针
+  className: "nginx"
+  annotations: { }
+  hosts: [ ]
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  # 关键修改：为了演示效果，我们暂时把 CPU 阈值设为 1%
+  # 只要 K6 一跑，立刻就能触发扩容，不用等 CPU 真的打满
+  targetCPUUtilizationPercentage: 1
+
+mysql:
+  host: ""
+  port: 0
+
+env:
+  springAppName: ""
+  # 我们在这里定义 Service Name，方便模板读取
+  otelServiceName: ""
+

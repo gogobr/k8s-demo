@@ -6,4 +6,4 @@ dependencies:
   repository: file://../../charts/spring-boot-app
   version: 0.1.0
 digest: sha256:4e6992a29a80411c30d9448d456f2d5c3a560946f2bc694d482165ed6b0c6733
-generated: "2026-03-01T13:29:34.703451+08:00"
+generated: "2026-03-01T14:54:05.97874+08:00"
