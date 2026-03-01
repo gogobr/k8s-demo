@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "spring-boot-app.fullname" . }}
   labels:
-    app: {{ .Release.Name }}
+    app: {{ include "spring-boot-app.fullname" . }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ .Release.Name }}-deploy
+    name: {{ include "spring-boot-app.fullname" . }}-deploy
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

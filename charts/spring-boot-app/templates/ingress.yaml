@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "spring-boot-app.fullname" . }}
   labels:
     {{- include "my-chart.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}

@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-deploy
+  name: {{ include "spring-boot-app.fullname" . }}-deploy
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
+      app: {{ include "spring-boot-app.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
+        app: {{ include "spring-boot-app.fullname" . }}
     spec:
       initContainers:
         - name: wait-for-mysql
@@ -50,7 +50,7 @@ spec:
             - name: GREETING_MESSAGE
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Release.Name }}-config
+                  name: {{ include "spring-boot-app.fullname" . }}-config
                   key: greeting.text
             - name: DB_USERNAME
               value: "root"
@@ -99,13 +99,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "spring-boot-app.fullname" . }}
   labels:
-    app: {{ .Release.Name }}
+    app: {{ include "spring-boot-app.fullname" . }}
 spec:
   type: {{ .Values.service.type }}
   selector:
-    app: {{ .Release.Name }}
+    app: {{ include "spring-boot-app.fullname" . }}
   ports:
     - name: http
       protocol: TCP

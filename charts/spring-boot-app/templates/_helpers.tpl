@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "my-chart.name" -}}
+{{- define "spring-boot-app.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "my-chart.fullname" -}}
+{{- define "spring-boot-app.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "my-chart.chart" -}}
+{{- define "spring-boot-app.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "my-chart.labels" -}}
-helm.sh/chart: {{ include "my-chart.chart" . }}
-{{ include "my-chart.selectorLabels" . }}
+{{- define "spring-boot-app.labels" -}}
+helm.sh/chart: {{ include "spring-boot-app.chart" . }}
+{{ include "spring-boot-app.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "my-chart.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "my-chart.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{- define "spring-boot-app.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "spring-boot-app.name" . }}
+app.kubernetes.io/instance: {{ include "spring-boot-app.fullname" . }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "my-chart.serviceAccountName" -}}
+{{- define "spring-boot-app.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "my-chart.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "spring-boot-app.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
