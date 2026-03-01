@@ -40,3 +40,6 @@ backend-v1:
     limits:
       cpu: "1000m"
       memory: "1024Mi"
+backend:
+  image:
+    tag: ae8c048efed0fb3f2daf30048ad53795aa49b7a8
