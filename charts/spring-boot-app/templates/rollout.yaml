@@ -1,0 +1,119 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ .Release.Name }}-deploy
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+      # 🌟 核心魔法：金丝雀发布策略！
+    strategy:
+      canary:
+        steps:
+          - setWeight: 20  # 第一步：把 20% 的流量切给新版本
+          - pause: { }      # 第二步：无限期暂停，等待人工去 ArgoCD 界面点“继续(Promote)”
+    spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.28
+          # 🔥【修复】外层用单引号，内层用双引号，避免解析冲突
+          command: [ 'sh', '-c', 'until nc -z -v -w 2 {{ .Values.mysql.host | default "mycluster.middleware" }} {{ .Values.mysql.port | default 6446 }}; do echo waiting for mysql; sleep 2; done' ]
+      containers:
+        - name: k8s-demo
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+          env:
+            - name: SPRING_APPLICATION_NAME
+              value: {{ .Values.env.springAppName | default .Release.Name }}
+
+            - name: GREETING_MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: greeting.text
+            - name: DB_USERNAME
+              value: "root"
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+
+            # 1. Service Name (从 values 读取，或者默认用 Release Name)
+            - name: OTEL_SERVICE_NAME
+              value: {{ .Values.env.otelServiceName | default .Release.Name }}
+
+            # 2. Collector 地址 (这是基础设施，通常是固定的)
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://observability-jaeger-collector.monitoring:4317"
+
+            # 3. 开启 SQL 参数显示
+            - name: OTEL_INSTRUMENTATION_JDBC_DATASOURCE_ENABLED
+              value: "true"
+
+            # 4. 默认使用 grpc
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "grpc"
+
+              # 🔥【新增】禁用 Metrics 导出 (解决 UNIMPLEMENTED 报错)
+              # 因为 Jaeger 只管链路，不管 JVM 内存/CPU 这些指标
+            - name: OTEL_METRICS_EXPORTER
+              value: "none"
+
+              # (可选) 建议顺手把 Logs 导出也禁用了，因为我们用 Promtail+Loki 采集日志了
+              # 避免 Agent 重复发日志给 Jaeger 浪费带宽
+            - name: OTEL_LOGS_EXPORTER
+              value: "none"
+
+            # 5. 数据库连接信息
+            - name: DB_URL
+              # 🔥【建议】这里也统一用双引号，更符合 Go Template 习惯，且要加上 .middleware 后缀确保跨命名空间能通
+              value: "jdbc:mysql://{{ .Values.mysql.host | default "mycluster.middleware" }}:{{ .Values.mysql.port | default 6446 }}/k8s_demo_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+
+            # 这会让 Actuator 生成 _bucket 指标
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Dmanagement.metrics.distribution.percentiles-histogram.http.server.requests=true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ .Release.Name }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
