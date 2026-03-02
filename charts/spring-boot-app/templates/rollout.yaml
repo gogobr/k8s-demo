@@ -9,16 +9,17 @@ spec:
   selector:
     matchLabels:
       app: {{ .Release.Name }}
-  template:
-    metadata:
-      labels:
-        app: {{ .Release.Name }}
-      # 🌟 核心魔法：金丝雀发布策略！
+
+    # 核心魔法：金丝雀发布策略！
     strategy:
       canary:
         steps:
           - setWeight: 20  # 第一步：把 20% 的流量切给新版本
           - pause: { }      # 第二步：无限期暂停，等待人工去 ArgoCD 界面点“继续(Promote)”
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
     spec:
       initContainers:
         - name: wait-for-mysql
