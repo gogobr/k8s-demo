@@ -30,7 +30,7 @@ autoscaling:
   maxReplicas: 10
   # 关键修改：为了演示效果，我们暂时把 CPU 阈值设为 1%
   # 只要 K6 一跑，立刻就能触发扩容，不用等 CPU 真的打满
-  targetCPUUtilizationPercentage: 1
+  targetCPUUtilizationPercentage: 50
   # 如果有 memory 配置，也可以加上，但 CPU 最直观
   # targetMemoryUtilizationPercentage: 80
 resources:
