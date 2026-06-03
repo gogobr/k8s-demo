@@ -29,7 +29,7 @@ spec:
             - sh
             - -c
             # 💡 核心修正：向 NameServer 注册时，不仅指定 Mac 的 IP，还要带上外部暴露的 NodePort 端口 (30911)
-            - "echo 'autoCreateTopicEnable=true' > /tmp/broker.conf && echo 'brokerIP1=10.1.11.23' >> /tmp/broker.conf && echo 'listenPort=30911' >> /tmp/broker.conf && sh mqbroker -n localhost:9876 -c /tmp/broker.conf"
+            - "echo 'autoCreateTopicEnable=true' > /tmp/broker.conf && echo 'brokerIP1=10.1.11.23' >> /tmp/broker.conf && echo 'listenPort=30911' >> /tmp/broker.conf && sh mqbroker -n localhost:9876 -c /tmp/broker.conf --enable-proxy"
           env:
             - name: JAVA_OPT_EXT
               value: "-server -Xms512m -Xmx512m -Xmn256m"
