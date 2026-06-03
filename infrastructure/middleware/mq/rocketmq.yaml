@@ -20,7 +20,6 @@ spec:
           ports:
             - containerPort: 9876
           env:
-            # 强行瘦身：限制 NameServer 内存为 256M
             - name: JAVA_OPT_EXT
               value: "-server -Xms256m -Xmx256m -Xmn128m"
 
@@ -29,14 +28,13 @@ spec:
           command:
             - sh
             - -c
-            - "echo 'autoCreateTopicEnable=true' > /tmp/broker.conf && sh mqbroker -n localhost:9876 -c /tmp/broker.conf"
+            # 💡 核心修正：向 NameServer 注册时，不仅指定 Mac 的 IP，还要带上外部暴露的 NodePort 端口 (30911)
+            - "echo 'autoCreateTopicEnable=true' > /tmp/broker.conf && echo 'brokerIP1=10.1.11.23' >> /tmp/broker.conf && echo 'listenPort=30911' >> /tmp/broker.conf && sh mqbroker -n localhost:9876 -c /tmp/broker.conf"
           env:
-            # 强行瘦身：限制 Broker 内存为 512M (否则默认 8G 直接炸)
             - name: JAVA_OPT_EXT
               value: "-server -Xms512m -Xmx512m -Xmn256m"
-
           ports:
-            - containerPort: 10911
+            - containerPort: 30911 # 容器内也改为监听 30911，保持一致
             - containerPort: 10909
 ---
 apiVersion: v1
@@ -45,10 +43,15 @@ metadata:
   name: rocketmq-svc
   namespace: middleware
 spec:
+  type: NodePort
   ports:
     - port: 9876
+      targetPort: 9876
+      nodePort: 30876
       name: namesrv
-    - port: 10911
+    - port: 30911 # 👈 统一改为 30911
+      targetPort: 30911
+      nodePort: 30911
       name: broker
   selector:
     app: rocketmq
