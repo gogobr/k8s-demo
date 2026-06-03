@@ -49,6 +49,10 @@ spec:
       targetPort: 9876
       nodePort: 30876
       name: namesrv
+    - port: 8081
+      targetPort: 8081
+      nodePort: 30081
+      name: grpc
     - port: 30911 # 👈 统一改为 30911
       targetPort: 30911
       nodePort: 30911
